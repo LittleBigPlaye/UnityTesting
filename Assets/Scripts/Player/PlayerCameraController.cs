@@ -63,7 +63,8 @@ public class PlayerCameraController : MonoBehaviour
         cameraFollowTransform.transform.localEulerAngles = angles;
 
         nextPlayerRotation = Quaternion.Lerp(cameraFollowTransform.rotation, nextPlayerRotation, Time.deltaTime * rotationLerp);
-        playerTransform.rotation = Quaternion.Euler(0, cameraFollowTransform.rotation.eulerAngles.y, 0);
+        
+        // playerTransform.rotation = Quaternion.Euler(0, cameraFollowTransform.rotation.eulerAngles.y, 0);
 
 
     }

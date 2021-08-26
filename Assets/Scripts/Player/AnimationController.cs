@@ -5,13 +5,15 @@ using UnityEngine;
 public enum PlayerState
 {
     IDLE,
-    WALKING
+    WALKING,
+    ROLLING
 
 }
 public class AnimationController : MonoBehaviour
 {
     private Animator animator;
     private PlayerState currentState;
+    private bool isMoving = false;
     public PlayerState CurrentState
     {
         get { return currentState; }
@@ -26,7 +28,7 @@ public class AnimationController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponent<Animator>();
         currentState = PlayerState.IDLE;
     }
 
@@ -36,15 +38,36 @@ public class AnimationController : MonoBehaviour
 
     }
 
-    public void Move(bool isMoving, Vector2 move)
+    public void StopRolling()
+    {
+        currentState = isMoving ? PlayerState.WALKING : PlayerState.IDLE;
+    }
+
+    public void LockOnMove(bool isMoving, Vector2 move)
     {
         if (isMoving)
         {
             currentState = PlayerState.WALKING;
         }
+        this.isMoving = isMoving;
         animator.SetBool("isWalking", isMoving);
         animator.SetFloat("movementForwardSpeed", move.y);
         animator.SetFloat("movementSidewardSpeed", move.x);
+    }
+
+    public void Move(bool isMoving, float movementSpeed) {
+        if(isMoving) {
+            currentState = PlayerState.WALKING;
+        }
+        animator.SetBool("isWalking", isMoving);
+        animator.SetFloat("movementForwardSpeed", movementSpeed);
+    }
+
+    public void TriggerRoll() {
+        if(currentState != PlayerState.ROLLING) {
+            currentState = PlayerState.ROLLING;
+            animator.SetTrigger("roll");
+        }
     }
 
     private void UpdateAnimator()
