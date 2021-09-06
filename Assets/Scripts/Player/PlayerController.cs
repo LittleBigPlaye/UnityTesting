@@ -1,193 +1,359 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(HealthController))]
+[RequireComponent(typeof(StaminaController))]
 public class PlayerController : MonoBehaviour
 {
-    public InputActionAsset inputActionAsset;
-    public Transform playerModelTransform;
-    public Transform camFollower;
-    public float movementSpeed = 5f;
-    public float maxSpeed = 7;
-    public float rotationSpeed = 5f;
-    //in seconds, described when the player starts to sprint
+    [Header("Movement")]
+    public Transform playerModel;
+    public float walkingSpeed = 5f;
+    public float sprintingSpeed = 7f;
+    public float playerRotationSpeed = 5f;
+    public float gravity = 12f;
+
+
     public float sprintDelay = 1f;
     public float rollSpeed = 3f;
+    public float dodgeSpeed = 2f;
 
-    private InputActionMap actionMap;
-    private InputAction moveInputAction;
-    private InputAction sprintInputAction;
-    private Vector2 move;
+    [Header("Camera")]
+    public Transform camFollower;
+    public float cameraRotationSpeed = 3f;
+    public float cameraRotationLerp = .5f;
+
+    [Header("LockOnSettings")]
+    public float lockOnRadius = 5f;
+    public float maxLockOnDistance = 15f;
+    public float lockOnSpeed = 5f;
+    public LayerMask layerMask;
+    public LockOnCursorController lockOnCursor;
+
+
+    private InputAsset inputAsset;
+    // #region Controllers
     private CharacterController characterController;
-    private AnimationController animationController;
+    private HealthController healthController;
+    private StaminaController staminaController;
+    // #endregion
+    private Animator animator;
+
+    private bool isMoving;
+    private Vector2 movementInput;
+    private Vector3 moveDirection = Vector3.zero;
     private float currentSpeed = 0;
-    private bool isSprintButtonPressed = false;
-    private bool isSprinting = false;
-    private Coroutine sprintRoutine;
-    private Vector3 rollMovement;
+
+    private bool isSprinting;
+    private Coroutine sprintCoroutine;
+
+    private Vector2 cameraRotationInput = Vector2.zero;
+
+    private Transform targetLockOnTransform = null;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        animationController = GetComponentInChildren<AnimationController>();
+        healthController = GetComponent<HealthController>();
+        staminaController = GetComponent<StaminaController>();
+        InitializeInputsBindings();
 
-        actionMap = inputActionAsset.FindActionMap("Player");
-        moveInputAction = actionMap.FindAction("Move");
-        sprintInputAction = actionMap.FindAction("Sprint");
-        sprintInputAction.performed += OnSprint;
-        sprintInputAction.canceled += OnSprint;
-        moveInputAction.performed += OnMove;
-        moveInputAction.canceled += OnMove;
+        animator = GetComponentInChildren<Animator>();
+
+        isMoving = false;
+        isSprinting = false;
+    }
+
+    private void InitializeInputsBindings()
+    {
+        inputAsset = new InputAsset();
+        inputAsset.Player.Move.performed += OnMove;
+        inputAsset.Player.Move.canceled += OnMove;
+
+        inputAsset.Player.Sprint.performed += OnSprint;
+        inputAsset.Player.Sprint.canceled += OnSprint;
+
+        inputAsset.Player.RotateCamera.performed += OnRotateCamera;
+        inputAsset.Player.RotateCamera.canceled += OnRotateCamera;
+
+        inputAsset.Player.LockOn.performed += OnLockOn;
+
+        inputAsset.Player.ChangeLockOn.performed += OnLockOnChange;
+    }
+
+    // #region Movement
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            movementInput = context.ReadValue<Vector2>();
+            //make sure to prevent magnitudes larger than 1
+            movementInput = movementInput.magnitude > 1 ? movementInput.normalized : movementInput;
+            isMoving = true;
+            animator.SetBool("isMoving", true);
+
+        }
+        else if (context.canceled)
+        {
+            movementInput = Vector2.zero;
+            isMoving = false;
+            animator.SetBool("isMoving", false);
+        }
+    }
+
+    private void Move()
+    {
+        Vector2 currentInput = (isSprinting) ? movementInput.normalized : movementInput;
+        Vector3 movement = camFollower.forward * currentInput.y + camFollower.right * currentInput.x;
+
+
+        float targetMovementSpeed = (isSprinting) ? sprintingSpeed : walkingSpeed;
+        currentSpeed = moveDirection.normalized.magnitude * targetMovementSpeed;
+
+        moveDirection.x = movement.x * targetMovementSpeed;
+        moveDirection.z = movement.z * targetMovementSpeed;
+
+        if (IsInLockOnMode())
+        {
+            animator.SetFloat("walkSidewardSpeed", movementInput.x);
+            animator.SetFloat("walkForwardSpeed", movementInput.y);
+        }
+        else
+        {
+            animator.SetFloat("walkSidewardSpeed", 0f);
+            animator.SetFloat("walkForwardSpeed", movement.magnitude);
+        }
+
+        if (!characterController.isGrounded)
+        {
+            moveDirection.y -= gravity * Time.deltaTime;
+        }
+
+        if (movementInput != Vector2.zero)
+        {
+            if (!IsInLockOnMode())
+            {
+                RotatePlayer(new Vector3(moveDirection.x, 0, moveDirection.z));
+            } else {
+                playerModel.LookAt(new Vector3(targetLockOnTransform.position.x, 0, targetLockOnTransform.position.z));
+                //RotatePlayer(new Vector3(targetLockOnTransform.position.x, 0, targetLockOnTransform.position.y));
+            }
+            characterController.Move(moveDirection * Time.deltaTime);
+        }
+
+    }
+
+    private void RotatePlayer(Vector3 target)
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(target);
+        if (Quaternion.Angle(playerModel.rotation, targetRotation) > .1f)
+        {
+            Quaternion nextRotation = Quaternion.Lerp(playerModel.rotation, targetRotation, Time.deltaTime * playerRotationSpeed);
+            playerModel.rotation = nextRotation;
+        }
     }
 
     private void OnSprint(InputAction.CallbackContext context)
     {
-        if (animationController.CurrentState == PlayerState.IDLE || animationController.CurrentState == PlayerState.WALKING)
+        if (isMoving)
         {
-            bool isPressed = context.ReadValue<float>() > 0.5f;
             if (context.performed)
             {
-                Debug.Log("Gedrückt");
-                sprintRoutine = StartCoroutine(StartSprintCountdown());
+                sprintCoroutine = StartCoroutine(StartSprintCountdown());
             }
             else
             {
-                StopCoroutine(sprintRoutine);
-                if (isSprinting)
+                StopCoroutine(sprintCoroutine);
+                if (!isSprinting)
                 {
-                    Debug.Log("Keine Rolle");
-                }
-                else
-                {
-                    if (animationController.CurrentState == PlayerState.WALKING)
-                    {
-                        animationController.TriggerRoll();
-                        //get the current camera orientation to prevent rolling in circles
-                        Debug.Log("Jetzt rollen");
-                    }
-
+                    Debug.Log("Roll");
                 }
                 isSprinting = false;
             }
         }
         else
         {
-            StopCoroutine(sprintRoutine);
+            StopCoroutine(sprintCoroutine);
+            isSprinting = false;
         }
+
     }
-
-
 
     IEnumerator StartSprintCountdown()
     {
-        Debug.Log("Started");
         yield return new WaitForSeconds(sprintDelay);
         isSprinting = true;
     }
+    // #endregion
 
-    private void OnMove(InputAction.CallbackContext context)
+    // #region Camera Handling
+    private void OnRotateCamera(InputAction.CallbackContext context)
     {
-        PlayerState currentState = animationController.CurrentState;
-        if (currentState == PlayerState.WALKING || currentState == PlayerState.IDLE)
+        if (context.performed)
         {
-            move = context.ReadValue<Vector2>();
-            //ensures that the player does not move faster when moving diagonally
-            move = move.magnitude > 1 ? move.normalized : move;
-            if (move.sqrMagnitude > 0)
-            {
-                animationController.CurrentState = PlayerState.WALKING;
-            }
-        }
-        if (context.canceled)
-        {
-            animationController.Move(false, 0);
-        }
-    }
-
-    private void Move()
-    {
-        Vector2 currentInput = (isSprinting) ? move.normalized : move;
-
-        Vector3 movement = camFollower.forward * currentInput.y + camFollower.right * currentInput.x;
-        //to prevent the player from going upwards manually
-        movement.y = 0;
-        RotatePlayer(movement);
-
-        float targetMovementSpeed = (isSprinting) ? maxSpeed : movementSpeed;
-
-        currentSpeed = movement.normalized.magnitude * targetMovementSpeed;
-        if (move != Vector2.zero)
-        {
-            animationController.Move(true, CalculateSpeedPercentage(move));
+            cameraRotationInput = context.ReadValue<Vector2>();
         }
         else
         {
-            animationController.Move(false, 0);
+            cameraRotationInput = Vector2.zero;
         }
-        characterController.Move(movement * targetMovementSpeed * Time.deltaTime);
     }
 
-    private void Roll()
+    private void RotateCamera()
     {
-        Vector3 movement = playerModelTransform.forward * rollSpeed;
-        //to prevent the player from going upwards manually
-        movement.y = 0;
-        characterController.Move(movement * Time.deltaTime);
-    }
-
-    private void RotatePlayer(Vector3 movement)
-    {
-        if (movement != Vector3.zero)
+        if (cameraRotationInput != Vector2.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(movement);
-            if (Quaternion.Angle(playerModelTransform.rotation, targetRotation) > .01f)
+            // rotate the camera horizontally
+            camFollower.rotation *= Quaternion.AngleAxis(cameraRotationInput.x * cameraRotationSpeed, Vector3.up);
+
+            // rotate the camera vertically
+            camFollower.rotation *= Quaternion.AngleAxis(cameraRotationInput.y * -cameraRotationSpeed, Vector3.right);
+
+            RestrictCameraRotationAngles();
+        }
+    }
+
+    private void RestrictCameraRotationAngles()
+    {
+        Vector3 angles = camFollower.localEulerAngles;
+        angles.z = 0;
+        float angle = camFollower.localEulerAngles.x;
+        if (angle > 180 && angle < 340)
+        {
+            angles.x = 340;
+        }
+        else if (angle < 180 && angle > 40)
+        {
+            angles.x = 40;
+        }
+        camFollower.localEulerAngles = angles;
+    }
+
+    void OnLockOn(InputAction.CallbackContext context)
+    {
+        if (!IsInLockOnMode())
+        {
+            List<Transform> lockOnTargets = GetNearbyLockOnTargets();
+            Transform closestTarget = GetClosestLockOnTarget(lockOnTargets);
+            if (closestTarget != null)
             {
-                Quaternion nextRotation = Quaternion.Lerp(playerModelTransform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
-                playerModelTransform.rotation = nextRotation;
+                targetLockOnTransform = closestTarget;
+                lockOnCursor.FollowTarget = closestTarget;
+                targetLockOnTransform.GetComponent<LockOnTargetController>().IsSelected = true;
+            }
+            else
+            {
+                camFollower.rotation = playerModel.rotation;
+            }
+
+        }
+        else
+        {
+            targetLockOnTransform.GetComponent<LockOnTargetController>().IsSelected = false;
+            targetLockOnTransform = null;
+            lockOnCursor.FollowTarget = null;
+        }
+    }
+
+    void OnLockOnChange(InputAction.CallbackContext context)
+    {
+        if (IsInLockOnMode())
+        {
+            float input = context.ReadValue<float>();
+            List<Transform> lockOnTargets = GetNearbyLockOnTargets();
+            if (lockOnTargets.Count > 1)
+            {
+                List<Transform> orderedTargets = lockOnTargets.OrderBy(c => CalculateAngleBetweenTargetAndPlayer(c, true)).ToList();
+
+                int currentTransformIndex = orderedTargets.IndexOf(targetLockOnTransform);
+                int newTargetIndex = Mathf.Clamp(currentTransformIndex + (int)input, 0, orderedTargets.Count - 1);
+
+                targetLockOnTransform.GetComponent<LockOnTargetController>().IsSelected = false;
+                targetLockOnTransform = orderedTargets[newTargetIndex];
+                lockOnCursor.FollowTarget = orderedTargets[newTargetIndex];
+                targetLockOnTransform.GetComponent<LockOnTargetController>().IsSelected = true;
             }
         }
     }
 
-    //calculates the percentage of the current movement speed for the animator
-    private float CalculateSpeedPercentage(Vector2 input)
+    private List<Transform> GetNearbyLockOnTargets()
     {
-        float speedPercentage = 0f;
-        if (isSprinting)
-        {
-
-            speedPercentage = currentSpeed * input.magnitude / movementSpeed / 2f;
-        }
-        else
-        {
-            speedPercentage = currentSpeed * input.magnitude / maxSpeed;
-        }
-        return speedPercentage;
+        Collider[] targetsInRadius = Physics.OverlapSphere(transform.position, lockOnRadius, layerMask);
+        //make sure to only include transforms that are actually a lock on target
+        List<Transform> targetTransforms = targetsInRadius.Where(c => c.GetComponent<LockOnTargetController>() != null).Select(c => c.transform).ToList();
+        return targetTransforms;
     }
+
+    private Transform GetClosestLockOnTarget(List<Transform> targetTransforms)
+    {
+        Transform closestTarget = null;
+        float lowestAngle = 360;
+        foreach (Transform t in targetTransforms)
+        {
+            float currentAngle = CalculateAngleBetweenTargetAndPlayer(t);
+            if (currentAngle < lowestAngle)
+            {
+                closestTarget = t;
+                lowestAngle = currentAngle;
+            }
+        }
+        return closestTarget;
+    }
+
+    private float CalculateAngleBetweenTargetAndPlayer(Transform target, bool isSigned = false)
+    {
+        Vector2 currentPosition = new Vector2(camFollower.forward.x, camFollower.forward.z);
+        Vector2 targetPosition = new Vector2(target.position.x, target.position.z);
+        Vector2 targetVector = new Vector2(targetPosition.x - currentPosition.x, targetPosition.y - currentPosition.y);
+        float targetAngle = isSigned ? Vector2.SignedAngle(currentPosition, targetVector) : Vector2.Angle(currentPosition, targetVector);
+        return targetAngle;
+    }
+
+    void UpdateLockOnRotation()
+    {
+        Vector3 relativePosition = targetLockOnTransform.position - camFollower.position;
+        Quaternion targetRotation = Quaternion.LookRotation(relativePosition);
+        camFollower.rotation = Quaternion.Lerp(camFollower.rotation, targetRotation, lockOnSpeed * Time.deltaTime);
+        RestrictCameraRotationAngles();
+
+        float distanceToLockOn = Vector3.Distance(camFollower.position, targetLockOnTransform.position);
+        if (distanceToLockOn > maxLockOnDistance)
+        {
+            targetLockOnTransform.GetComponent<LockOnTargetController>().IsSelected = false;
+            targetLockOnTransform = null;
+            lockOnCursor.FollowTarget = null;
+        }
+    }
+
+    private bool IsInLockOnMode()
+    {
+        return targetLockOnTransform != null;
+    }
+
+    // #endregion
 
     void Update()
     {
-        switch (animationController.CurrentState)
+        if (IsInLockOnMode())
         {
-            case PlayerState.WALKING:
-                Move();
-                break;
-            case PlayerState.ROLLING:
-                Roll();
-                break;
-
+            UpdateLockOnRotation();
         }
+        else
+        {
+            RotateCamera();
+        }
+        Move();
     }
 
     private void OnEnable()
     {
-        moveInputAction.Enable();
-        sprintInputAction.Enable();
+        inputAsset.Enable();
     }
-
     private void OnDisable()
     {
-        moveInputAction.Disable();
-        sprintInputAction.Disable();
+        inputAsset.Disable();
     }
 }

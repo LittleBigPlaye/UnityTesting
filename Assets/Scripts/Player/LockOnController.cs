@@ -126,8 +126,8 @@ public class LockOnController : MonoBehaviour
     {
         Vector2 currentPosition = new Vector2(cameraFollower.forward.x, cameraFollower.forward.z);
         Vector2 targetPosition = new Vector2(target.position.x, target.position.z);
-        Vector2 vectorToCalculate = new Vector2(targetPosition.x - currentPosition.x, targetPosition.y - currentPosition.y);
-        float targetAngle = isSigned ? Vector2.SignedAngle(currentPosition, vectorToCalculate) : Vector2.Angle(currentPosition, vectorToCalculate);
+        Vector2 targetVector = new Vector2(targetPosition.x - currentPosition.x, targetPosition.y - currentPosition.y);
+        float targetAngle = isSigned ? Vector2.SignedAngle(currentPosition, targetVector) : Vector2.Angle(currentPosition, targetVector);
         return targetAngle;
     }
 

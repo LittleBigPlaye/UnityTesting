@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealthController : MonoBehaviour
+public class StaminaController : MonoBehaviour
 {
-    private int currentHealth = 100;
-    public int CurrentHealth
+    private int currentStamina = 100;
+    public int CurrentStamina
     {
-        get { return currentHealth; }
-        set { currentHealth = value; }
+        get { return currentStamina; }
+        set { currentStamina = value; }
     }
 
     // Start is called before the first frame update
