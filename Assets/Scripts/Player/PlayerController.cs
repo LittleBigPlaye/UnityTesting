@@ -65,6 +65,7 @@ public class PlayerController : MonoBehaviour
 
         isMoving = false;
         isSprinting = false;
+        
     }
 
     private void InitializeInputsBindings()
@@ -172,12 +173,14 @@ public class PlayerController : MonoBehaviour
                     Debug.Log("Roll");
                 }
                 isSprinting = false;
+                animator.SetBool("isSprinting", false);
             }
         }
         else
         {
             StopCoroutine(sprintCoroutine);
             isSprinting = false;
+            animator.SetBool("isSprinting", false);
         }
 
     }
@@ -186,6 +189,7 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(sprintDelay);
         isSprinting = true;
+        animator.SetBool("isSprinting", true);
     }
     // #endregion
 
