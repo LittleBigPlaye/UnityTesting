@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
     private HealthController healthController;
     private StaminaController staminaController;
     private CombatController combatController;
+    private PlayerMovementAnimationController movementAnimationController;
     /* #endregion */
 
     private Animator animator;
@@ -53,11 +54,30 @@ public class PlayerController : MonoBehaviour
 
     private bool isSprinting;
     private bool isFalling;
+    public bool IsFalling
+    {
+        get { return isFalling; }
+        set { isFalling = value; }
+    }
+
     private bool isAttacking;
     public bool IsAttacking
     {
         get { return isAttacking; }
         set { isAttacking = value; }
+    }
+    private bool isRolling;
+    public bool IsRolling
+    {
+        get { return isRolling; }
+        set { isRolling = value; }
+    }
+
+    private bool isDodging;
+    public bool IsDodging
+    {
+        get { return isDodging; }
+        set { isDodging = value; }
     }
 
     private Coroutine sprintCoroutine;
@@ -76,6 +96,7 @@ public class PlayerController : MonoBehaviour
 
         animator = GetComponentInChildren<Animator>();
         combatController = GetComponentInChildren<CombatController>();
+        movementAnimationController = GetComponentInChildren<PlayerMovementAnimationController>();
 
         isMoving = false;
         isSprinting = false;
@@ -99,6 +120,10 @@ public class PlayerController : MonoBehaviour
         inputAsset.Player.ChangeLockOn.performed += OnLockOnChange;
 
         inputAsset.Player.LightAttack.performed += OnLightAttack;
+        inputAsset.Player.HeavyAttack.performed += OnHeavyAttack;
+
+        inputAsset.Player.Block.performed += OnBlock;
+        inputAsset.Player.Block.canceled += OnBlock;
     }
 
     /* #region Movement */
@@ -128,6 +153,21 @@ public class PlayerController : MonoBehaviour
             moveDirection.x = 0;
             moveDirection.z = 0;
         }
+        else if (isRolling)
+        {
+            Vector3 rollDirection = playerModel.forward * rollSpeed;
+            moveDirection = new Vector3(rollDirection.x, moveDirection.y, rollDirection.z);
+        }
+        else if (isDodging)
+        {
+            Vector3 dodgeDirection = -playerModel.forward * dodgeSpeed;
+            moveDirection = new Vector3(dodgeDirection.x, moveDirection.y, dodgeDirection.z);
+        }
+        else if (isFalling)
+        {
+            moveDirection.x = 0;
+            moveDirection.z = 0;
+        }
         else
         {
             Vector2 currentInput = (isSprinting) ? movementInput.normalized : movementInput;
@@ -140,7 +180,6 @@ public class PlayerController : MonoBehaviour
             moveDirection.x = movement.x * targetMovementSpeed;
             moveDirection.z = movement.z * targetMovementSpeed;
         }
-
 
         if (IsInLockOnMode())
         {
@@ -155,10 +194,11 @@ public class PlayerController : MonoBehaviour
 
         if (!characterController.isGrounded)
         {
-            moveDirection.y -= gravity * Time.deltaTime;
+            moveDirection.y = 0;
+            moveDirection += Physics.gravity;
         }
 
-        if (movementInput != Vector2.zero && !isAttacking)
+        if (movementInput != Vector2.zero && !isAttacking && !isDodging && !isRolling && !isFalling)
         {
             if (!IsInLockOnMode())
             {
@@ -199,9 +239,11 @@ public class PlayerController : MonoBehaviour
             else
             {
                 StopCoroutine(sprintCoroutine);
-                if (!isSprinting)
+                if (!isSprinting && !isDodging && isMoving)
                 {
-                    Debug.Log("Roll");
+                    playerModel.rotation = Quaternion.LookRotation(new Vector3(moveDirection.x, 0, moveDirection.z));
+                    isRolling = true;
+                    movementAnimationController.TriggerRoll();
                 }
                 isSprinting = false;
                 animator.SetBool("isSprinting", false);
@@ -209,7 +251,15 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            StopCoroutine(sprintCoroutine);
+            if (context.performed && !isDodging && !isRolling)
+            {
+                isDodging = true;
+                movementAnimationController.TriggerDodge();
+            }
+            if (sprintCoroutine != null)
+            {
+                StopCoroutine(sprintCoroutine);
+            }
             isSprinting = false;
             animator.SetBool("isSprinting", false);
         }
@@ -379,8 +429,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnHeavyAttack(InputAction.CallbackContext context)
+    {
+        if(combatController.CanAttack) {
+            combatController.TriggerAttack(true);
+        }
+    }
 
+    private void OnBlock(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            animator.SetBool("isBlocking", true);
+        }
+        else
+        {
+            animator.SetBool("isBlocking", false);
+        }
+    }
     /* #endregion */
+
+
 
     void Update()
     {
@@ -396,26 +465,33 @@ public class PlayerController : MonoBehaviour
             }
         }
         Move();
-        animator.SetBool("isGrounded", characterController.isGrounded);
-        if (characterController.isGrounded)
-        {
 
+        if (!characterController.isGrounded && currentFallingTime > .01f)
+        {
+            animator.SetBool("isGrounded", false);
+        }
+        else
+        {
+            animator.SetBool("isGrounded", true);
+        }
+
+        if (characterController.isGrounded && currentFallingTime < hardLandingDelay)
+        {
             isFalling = false;
         }
         else
         {
+
             if (!isFalling)
             {
+
                 animator.SetBool("isLongFall", false);
                 currentFallingTime = 0;
-
             }
 
             currentFallingTime += Time.deltaTime;
-            Debug.Log(currentFallingTime);
             if (currentFallingTime >= hardLandingDelay)
             {
-                Debug.Log("Test");
                 animator.SetBool("isLongFall", true);
             }
             isFalling = true;
