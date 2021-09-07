@@ -46,7 +46,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Light Attack",
+                    "name": "Heavy Attack",
                     "type": "Button",
                     "id": "b61524b3-1a1c-4ac0-93f4-37b98505c730",
                     "expectedControlType": "Button",
@@ -54,7 +54,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Strong Attack",
+                    "name": "Light Attack",
                     "type": "Button",
                     "id": "e949fe42-2a05-499e-b79a-4a1ecd660b2b",
                     "expectedControlType": "Button",
@@ -294,7 +294,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Light Attack",
+                    "action": "Heavy Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -305,7 +305,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Strong Attack",
+                    "action": "Light Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

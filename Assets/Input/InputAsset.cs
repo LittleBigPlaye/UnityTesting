@@ -59,7 +59,7 @@ public class @InputAsset : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Light Attack"",
+                    ""name"": ""Heavy Attack"",
                     ""type"": ""Button"",
                     ""id"": ""b61524b3-1a1c-4ac0-93f4-37b98505c730"",
                     ""expectedControlType"": ""Button"",
@@ -67,7 +67,7 @@ public class @InputAsset : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Strong Attack"",
+                    ""name"": ""Light Attack"",
                     ""type"": ""Button"",
                     ""id"": ""e949fe42-2a05-499e-b79a-4a1ecd660b2b"",
                     ""expectedControlType"": ""Button"",
@@ -307,7 +307,7 @@ public class @InputAsset : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Light Attack"",
+                    ""action"": ""Heavy Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -318,7 +318,7 @@ public class @InputAsset : IInputActionCollection, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""Strong Attack"",
+                    ""action"": ""Light Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -439,8 +439,8 @@ public class @InputAsset : IInputActionCollection, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_LockOn = m_Player.FindAction("Lock On", throwIfNotFound: true);
         m_Player_ChangeLockOn = m_Player.FindAction("Change Lock On", throwIfNotFound: true);
+        m_Player_HeavyAttack = m_Player.FindAction("Heavy Attack", throwIfNotFound: true);
         m_Player_LightAttack = m_Player.FindAction("Light Attack", throwIfNotFound: true);
-        m_Player_StrongAttack = m_Player.FindAction("Strong Attack", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_SwitchInteraction = m_Player.FindAction("Switch Interaction", throwIfNotFound: true);
         m_Player_UseItem = m_Player.FindAction("Use Item", throwIfNotFound: true);
@@ -501,8 +501,8 @@ public class @InputAsset : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_LockOn;
     private readonly InputAction m_Player_ChangeLockOn;
+    private readonly InputAction m_Player_HeavyAttack;
     private readonly InputAction m_Player_LightAttack;
-    private readonly InputAction m_Player_StrongAttack;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_SwitchInteraction;
     private readonly InputAction m_Player_UseItem;
@@ -518,8 +518,8 @@ public class @InputAsset : IInputActionCollection, IDisposable
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @LockOn => m_Wrapper.m_Player_LockOn;
         public InputAction @ChangeLockOn => m_Wrapper.m_Player_ChangeLockOn;
+        public InputAction @HeavyAttack => m_Wrapper.m_Player_HeavyAttack;
         public InputAction @LightAttack => m_Wrapper.m_Player_LightAttack;
-        public InputAction @StrongAttack => m_Wrapper.m_Player_StrongAttack;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @SwitchInteraction => m_Wrapper.m_Player_SwitchInteraction;
         public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
@@ -550,12 +550,12 @@ public class @InputAsset : IInputActionCollection, IDisposable
                 @ChangeLockOn.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeLockOn;
                 @ChangeLockOn.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeLockOn;
                 @ChangeLockOn.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeLockOn;
+                @HeavyAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyAttack;
+                @HeavyAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyAttack;
+                @HeavyAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHeavyAttack;
                 @LightAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
                 @LightAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
                 @LightAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnLightAttack;
-                @StrongAttack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStrongAttack;
-                @StrongAttack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStrongAttack;
-                @StrongAttack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStrongAttack;
                 @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
@@ -593,12 +593,12 @@ public class @InputAsset : IInputActionCollection, IDisposable
                 @ChangeLockOn.started += instance.OnChangeLockOn;
                 @ChangeLockOn.performed += instance.OnChangeLockOn;
                 @ChangeLockOn.canceled += instance.OnChangeLockOn;
+                @HeavyAttack.started += instance.OnHeavyAttack;
+                @HeavyAttack.performed += instance.OnHeavyAttack;
+                @HeavyAttack.canceled += instance.OnHeavyAttack;
                 @LightAttack.started += instance.OnLightAttack;
                 @LightAttack.performed += instance.OnLightAttack;
                 @LightAttack.canceled += instance.OnLightAttack;
-                @StrongAttack.started += instance.OnStrongAttack;
-                @StrongAttack.performed += instance.OnStrongAttack;
-                @StrongAttack.canceled += instance.OnStrongAttack;
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
@@ -646,8 +646,8 @@ public class @InputAsset : IInputActionCollection, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnLockOn(InputAction.CallbackContext context);
         void OnChangeLockOn(InputAction.CallbackContext context);
+        void OnHeavyAttack(InputAction.CallbackContext context);
         void OnLightAttack(InputAction.CallbackContext context);
-        void OnStrongAttack(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnSwitchInteraction(InputAction.CallbackContext context);
         void OnUseItem(InputAction.CallbackContext context);

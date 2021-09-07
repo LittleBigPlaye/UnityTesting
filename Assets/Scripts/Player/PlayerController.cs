@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public float sprintDelay = 1f;
     public float rollSpeed = 3f;
     public float dodgeSpeed = 2f;
+    public float hardLandingDelay = 1f;
 
     [Header("Camera")]
     public Transform camFollower;
@@ -35,11 +36,14 @@ public class PlayerController : MonoBehaviour
 
 
     private InputAsset inputAsset;
-    // #region Controllers
+
+    /* #region Controllers */
     private CharacterController characterController;
     private HealthController healthController;
     private StaminaController staminaController;
-    // #endregion
+    private CombatController combatController;
+    /* #endregion */
+
     private Animator animator;
 
     private bool isMoving;
@@ -48,11 +52,20 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed = 0;
 
     private bool isSprinting;
+    private bool isFalling;
+    private bool isAttacking;
+    public bool IsAttacking
+    {
+        get { return isAttacking; }
+        set { isAttacking = value; }
+    }
+
     private Coroutine sprintCoroutine;
 
     private Vector2 cameraRotationInput = Vector2.zero;
 
     private Transform targetLockOnTransform = null;
+    private float currentFallingTime = 0f;
 
     private void Awake()
     {
@@ -62,10 +75,11 @@ public class PlayerController : MonoBehaviour
         InitializeInputsBindings();
 
         animator = GetComponentInChildren<Animator>();
+        combatController = GetComponentInChildren<CombatController>();
 
         isMoving = false;
         isSprinting = false;
-        
+
     }
 
     private void InitializeInputsBindings()
@@ -83,9 +97,11 @@ public class PlayerController : MonoBehaviour
         inputAsset.Player.LockOn.performed += OnLockOn;
 
         inputAsset.Player.ChangeLockOn.performed += OnLockOnChange;
+
+        inputAsset.Player.LightAttack.performed += OnLightAttack;
     }
 
-    // #region Movement
+    /* #region Movement */
     private void OnMove(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -107,15 +123,24 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        Vector2 currentInput = (isSprinting) ? movementInput.normalized : movementInput;
-        Vector3 movement = camFollower.forward * currentInput.y + camFollower.right * currentInput.x;
+        if (isAttacking)
+        {
+            moveDirection.x = 0;
+            moveDirection.z = 0;
+        }
+        else
+        {
+            Vector2 currentInput = (isSprinting) ? movementInput.normalized : movementInput;
+            Vector3 movement = camFollower.forward * currentInput.y + camFollower.right * currentInput.x;
 
 
-        float targetMovementSpeed = (isSprinting) ? sprintingSpeed : walkingSpeed;
-        currentSpeed = moveDirection.normalized.magnitude * targetMovementSpeed;
+            float targetMovementSpeed = (isSprinting) ? sprintingSpeed : walkingSpeed;
+            currentSpeed = moveDirection.normalized.magnitude * targetMovementSpeed;
 
-        moveDirection.x = movement.x * targetMovementSpeed;
-        moveDirection.z = movement.z * targetMovementSpeed;
+            moveDirection.x = movement.x * targetMovementSpeed;
+            moveDirection.z = movement.z * targetMovementSpeed;
+        }
+
 
         if (IsInLockOnMode())
         {
@@ -125,7 +150,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             animator.SetFloat("walkSidewardSpeed", 0f);
-            animator.SetFloat("walkForwardSpeed", movement.magnitude);
+            animator.SetFloat("walkForwardSpeed", CalculateMovementPercentage(characterController.velocity.magnitude));
         }
 
         if (!characterController.isGrounded)
@@ -133,18 +158,24 @@ public class PlayerController : MonoBehaviour
             moveDirection.y -= gravity * Time.deltaTime;
         }
 
-        if (movementInput != Vector2.zero)
+        if (movementInput != Vector2.zero && !isAttacking)
         {
             if (!IsInLockOnMode())
             {
                 RotatePlayer(new Vector3(moveDirection.x, 0, moveDirection.z));
-            } else {
-                playerModel.LookAt(new Vector3(targetLockOnTransform.position.x, 0, targetLockOnTransform.position.z));
-                //RotatePlayer(new Vector3(targetLockOnTransform.position.x, 0, targetLockOnTransform.position.y));
             }
-            characterController.Move(moveDirection * Time.deltaTime);
+            else
+            {
+                playerModel.LookAt(new Vector3(targetLockOnTransform.position.x, 0, targetLockOnTransform.position.z));
+            }
         }
 
+        characterController.Move(moveDirection * Time.deltaTime);
+    }
+
+    private float CalculateMovementPercentage(float movementSpeed)
+    {
+        return Mathf.Clamp(movementSpeed / walkingSpeed, 0, 1);
     }
 
     private void RotatePlayer(Vector3 target)
@@ -191,9 +222,9 @@ public class PlayerController : MonoBehaviour
         isSprinting = true;
         animator.SetBool("isSprinting", true);
     }
-    // #endregion
+    /* #endregion */
 
-    // #region Camera Handling
+    /* #region Camera Handling */
     private void OnRotateCamera(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -337,19 +368,58 @@ public class PlayerController : MonoBehaviour
         return targetLockOnTransform != null;
     }
 
-    // #endregion
+    /* #endregion */
+
+    /* #region Attack Handling*/
+    private void OnLightAttack(InputAction.CallbackContext context)
+    {
+        if (combatController.CanAttack)
+        {
+            combatController.TriggerAttack(false);
+        }
+    }
+
+
+    /* #endregion */
 
     void Update()
     {
-        if (IsInLockOnMode())
+        if (!isAttacking)
         {
-            UpdateLockOnRotation();
+            if (IsInLockOnMode())
+            {
+                UpdateLockOnRotation();
+            }
+            else
+            {
+                RotateCamera();
+            }
+        }
+        Move();
+        animator.SetBool("isGrounded", characterController.isGrounded);
+        if (characterController.isGrounded)
+        {
+
+            isFalling = false;
         }
         else
         {
-            RotateCamera();
+            if (!isFalling)
+            {
+                animator.SetBool("isLongFall", false);
+                currentFallingTime = 0;
+
+            }
+
+            currentFallingTime += Time.deltaTime;
+            Debug.Log(currentFallingTime);
+            if (currentFallingTime >= hardLandingDelay)
+            {
+                Debug.Log("Test");
+                animator.SetBool("isLongFall", true);
+            }
+            isFalling = true;
         }
-        Move();
     }
 
     private void OnEnable()
