@@ -100,7 +100,6 @@ public class PlayerController : MonoBehaviour
 
         isMoving = false;
         isSprinting = false;
-
     }
 
     private void InitializeInputsBindings()
@@ -238,7 +237,10 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                StopCoroutine(sprintCoroutine);
+                if (sprintCoroutine != null)
+                {
+                    StopCoroutine(sprintCoroutine);
+                }
                 if (!isSprinting && !isDodging && isMoving)
                 {
                     playerModel.rotation = Quaternion.LookRotation(new Vector3(moveDirection.x, 0, moveDirection.z));
@@ -431,7 +433,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnHeavyAttack(InputAction.CallbackContext context)
     {
-        if(combatController.CanAttack) {
+        if (combatController.CanAttack)
+        {
             combatController.TriggerAttack(true);
         }
     }
@@ -470,6 +473,11 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("isGrounded", false);
         }
+        else if (characterController.isGrounded && currentFallingTime > hardLandingDelay)
+        {
+            animator.SetBool("isGrounded", true);
+            StartCoroutine(ActivateRumble(0.345f, 0.234f, .01f));
+        }
         else
         {
             animator.SetBool("isGrounded", true);
@@ -496,6 +504,13 @@ public class PlayerController : MonoBehaviour
             }
             isFalling = true;
         }
+    }
+
+    IEnumerator ActivateRumble(float lowFrequency, float highFrequency, float duration)
+    {
+        Gamepad.current.SetMotorSpeeds(lowFrequency, highFrequency);
+        yield return new WaitForSecondsRealtime(duration);
+        Gamepad.current.SetMotorSpeeds(0f, 0f);
     }
 
     private void OnEnable()
