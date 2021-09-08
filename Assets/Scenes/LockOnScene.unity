@@ -2374,7 +2374,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 791148257}
   m_LocalRotation: {x: 0.064511165, y: 0.9351936, z: -0.25821546, w: 0.23361522}
-  m_LocalPosition: {x: 0.669, y: 1.6158674, z: -3.5492706}
+  m_LocalPosition: {x: 0.669, y: 6.1858673, z: -3.5492706}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 47894350}
@@ -2631,37 +2631,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1440706357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4051927619203569657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1621bcf4ec9c51b49b4495f6cb85ea2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerModel: {fileID: 651450801}
-  walkingSpeed: 5
-  sprintingSpeed: 8
-  playerRotationSpeed: 7.5
-  gravity: 5
-  sprintDelay: 0.5
-  rollSpeed: 7.5
-  dodgeSpeed: 4
-  hardLandingDelay: 1
-  camFollower: {fileID: 1108336565}
-  cameraRotationSpeed: 0.3
-  cameraRotationLerp: 0.5
-  lockOnRadius: 7.5
-  maxLockOnDistance: 20
-  lockOnSpeed: 5
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  lockOnCursor: {fileID: 80010871}
 --- !u!114 &1440706358
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2691,18 +2660,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 8daf372da271fd649a7d8c8922854f76, type: 3}
   m_PrefabInstance: {fileID: 424640240}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1477702009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1477702008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec342d7b188c0874b845572bc32c2cce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1477702010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2712,9 +2669,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 1477702008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d47462a6d9f451449baf427b57e24b9, type: 3}
+  m_Script: {fileID: 11500000, guid: a4ad906ee4bf1b84081a9c8c625adc61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerModel: {fileID: 0}
+  walkingSpeed: 5
+  sprintingSpeed: 8
+  playerRotationSpeed: 5
+  gravity: 12
+  sprintDelay: 1
+  rollSpeed: 5
+  dodgeSpeed: 4
+  hardLandingDelay: 1
+  camFollower: {fileID: 1108336565}
+  cameraRotationSpeed: 200
+  cameraRotationLerp: 0.5
+  lockOnRadius: 5
+  maxLockOnDistance: 15
+  lockOnSpeed: 5
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  lockOnCursor: {fileID: 0}
 --- !u!1 &1511899573
 GameObject:
   m_ObjectHideFlags: 0
@@ -2794,7 +2770,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1511899573}
   m_LocalRotation: {x: 0.08715578, y: 0, z: 0, w: 0.9961947}
-  m_LocalPosition: {x: 0.669, y: 1.6158674, z: -3.5492706}
+  m_LocalPosition: {x: 0.669, y: 6.1858673, z: -3.5492706}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3178,7 +3154,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4051927619203569657}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.23, y: -0.59, z: 0.7932086}
+  m_LocalPosition: {x: 0.23, y: 3.98, z: 0.7932086}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1108336565}
@@ -3196,7 +3172,6 @@ GameObject:
   m_Component:
   - component: {fileID: 301462837418886699}
   - component: {fileID: 2042085330}
-  - component: {fileID: 1440706357}
   - component: {fileID: 1440706358}
   - component: {fileID: 1440706359}
   m_Layer: 7

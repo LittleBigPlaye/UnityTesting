@@ -57670,7 +57670,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.8666667
-    functionName: EndDodge
+    functionName: EndState
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
