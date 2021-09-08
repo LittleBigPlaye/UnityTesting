@@ -17,13 +17,15 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void UpdateState(PlayerStateManager player)
     {
-        if(!player.CharacterController.isGrounded) {
+        if (!player.CharacterController.isGrounded)
+        {
             ExitState(player);
             player.SwitchState(player.fallingState);
         }
-        
+
         MovePlayer(player);
         RotatePlayer(player);
+
 
         if (isSprintKeyPressed && currentSprintKeyTime < player.sprintDelay)
         {
@@ -48,19 +50,39 @@ public class PlayerWalkingState : PlayerBaseState
         moveDirection.z *= player.walkingSpeed;
         player.Move(moveDirection);
 
-        float movementSpeedPercentage = Mathf.Clamp(player.CharacterController.velocity.magnitude / player.walkingSpeed, 0, 1);
-        player.Animator.SetFloat("walkForwardSpeed", movementSpeedPercentage);
+        if (player.LockOnTarget != null)
+        {
+            player.Animator.SetFloat("walkSidewardSpeed", movementInput.x);
+            player.Animator.SetFloat("walkForwardSpeed", movementInput.y);
+        }
+        else
+        {
+            player.Animator.SetFloat("walkSidewardSpeed", 0f);
+            float movementSpeedPercentage = Mathf.Clamp(player.CharacterController.velocity.magnitude / player.walkingSpeed, 0, 1);
+            player.Animator.SetFloat("walkForwardSpeed", movementSpeedPercentage);
+        }
     }
 
     private void RotatePlayer(PlayerStateManager player)
     {
-        Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-        if (Quaternion.Angle(player.transform.rotation, targetRotation) > .1f)
+        if (player.LockOnTarget != null)
         {
-            Quaternion nextRotation = Quaternion.Lerp(player.transform.rotation, targetRotation, Time.deltaTime * player.playerRotationSpeed);
-            player.transform.rotation = nextRotation;
+            player.transform.LookAt(new Vector3(player.LockOnTarget.position.x, 0f, player.LockOnTarget.position.z));
         }
+        else
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            if (Quaternion.Angle(player.transform.rotation, targetRotation) > .1f)
+            {
+                Quaternion nextRotation = Quaternion.Lerp(player.transform.rotation, targetRotation, Time.deltaTime * player.playerRotationSpeed);
+                player.transform.rotation = nextRotation;
+            }
+        }
+
+
     }
+
+
 
     public override void ExitState(PlayerStateManager player)
     {
