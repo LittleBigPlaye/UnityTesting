@@ -2689,8 +2689,8 @@ MonoBehaviour:
   lockOnSpeed: 5
   layerMask:
     serializedVersion: 2
-    m_Bits: 0
-  lockOnCursor: {fileID: 0}
+    m_Bits: 64
+  lockOnCursor: {fileID: 80010871}
 --- !u!1 &1511899573
 GameObject:
   m_ObjectHideFlags: 0
