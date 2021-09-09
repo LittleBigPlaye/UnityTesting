@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerRollState : PlayerBaseState
+public class PlayerHealingState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
-        player.Animator.SetTrigger("roll");
+        player.Animator.SetTrigger("heal");
     }
 
     public override void ExitState(PlayerStateManager player)
@@ -24,9 +24,6 @@ public class PlayerRollState : PlayerBaseState
 
     public override void UpdateState(PlayerStateManager player)
     {
-        Vector3 rollDirection = player.transform.forward * player.rollSpeed;
-        rollDirection.y = 0;
-        player.Move(rollDirection);
     }
 
     public override void OnMove(InputAction.CallbackContext context, PlayerStateManager player)

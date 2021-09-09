@@ -9,7 +9,7 @@ public class PlayerWalkingState : PlayerBaseState
     private bool isSprintKeyPressed = false;
     private float currentSprintKeyTime = 0f;
 
-    public override void EnterState(PlayerStateManager player)
+    public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.Animator.SetBool("isMoving", true);
         player.Animator.SetFloat("walkSidewardSpeed", 0f);
@@ -25,7 +25,7 @@ public class PlayerWalkingState : PlayerBaseState
 
         MovePlayer(player);
         RotatePlayer(player);
-
+        Debug.Log(Vector3.Angle(moveDirection, player.transform.forward));
 
         if (isSprintKeyPressed && currentSprintKeyTime < player.sprintDelay)
         {
@@ -116,8 +116,13 @@ public class PlayerWalkingState : PlayerBaseState
         }
     }
 
-
-
-
-
+    public override void OnUseItem(InputAction.CallbackContext context, PlayerStateManager player)
+    {
+        //TODO: Replace with check if the player has enough flasks left
+        if (true)
+        {
+            ExitState(player);
+        }
+        player.SwitchState(player.healingState);
+    }
 }

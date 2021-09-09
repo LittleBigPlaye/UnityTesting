@@ -386,7 +386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b6a063720e3b63418f8d90fbd284fa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 1108336565}
+  playerCamera: {fileID: 0}
 --- !u!1 &81508483
 GameObject:
   m_ObjectHideFlags: 0
@@ -2677,7 +2677,7 @@ MonoBehaviour:
   sprintingSpeed: 8
   playerRotationSpeed: 5
   gravity: 12
-  sprintDelay: 1
+  sprintDelay: 0.25
   rollSpeed: 5
   dodgeSpeed: 4
   hardLandingDelay: 1

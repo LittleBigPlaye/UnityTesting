@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerHardLandingState : PlayerBaseState
 {
-    public override void EnterState(PlayerStateManager player)
+    public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.Animator.SetBool("isGrounded", true);
         player.Animator.SetBool("isGrounded", true);

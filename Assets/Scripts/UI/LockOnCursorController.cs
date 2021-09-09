@@ -5,7 +5,7 @@ using UnityEngine;
 public class LockOnCursorController : MonoBehaviour
 {
 
-    public Transform camera;
+    public Transform playerCamera;
     private Animator animator;
 
     private Transform followTarget;
@@ -36,7 +36,7 @@ public class LockOnCursorController : MonoBehaviour
     {
         if (followTarget != null)
         {
-            transform.LookAt(camera);
+            transform.LookAt(playerCamera);
             transform.position = followTarget.position;
         }
     }

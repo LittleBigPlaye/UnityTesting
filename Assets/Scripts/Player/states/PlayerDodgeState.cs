@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerDodgeState : PlayerBaseState
 {
-    public override void EnterState(PlayerStateManager player)
+    public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.Animator.SetTrigger("dodge");
     }

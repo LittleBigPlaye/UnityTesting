@@ -7,7 +7,7 @@ public class PlayerFallingState : PlayerBaseState
 {
     private float currentFallingTime = 0f;
 
-    public override void EnterState(PlayerStateManager player)
+    public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         currentFallingTime = 0f;
         player.Animator.SetBool("isGrounded", false);

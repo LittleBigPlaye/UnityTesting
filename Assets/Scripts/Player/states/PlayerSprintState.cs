@@ -7,7 +7,7 @@ public class PlayerSprintState : PlayerBaseState
 {
     private Vector3 moveDirection = Vector3.zero;
     
-    public override void EnterState(PlayerStateManager player)
+    public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.Animator.SetBool("isSprinting", true);
     }

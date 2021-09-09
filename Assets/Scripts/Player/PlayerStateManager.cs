@@ -49,6 +49,13 @@ public class PlayerStateManager : MonoBehaviour
 
     public PlayerFallingState fallingState = new PlayerFallingState();
     public PlayerHardLandingState hardLandingState = new PlayerHardLandingState();
+
+    public PlayerHealingState healingState = new PlayerHealingState();
+    public PlayerHitState hitState = new PlayerHitState();
+    public PlayerDeathState deathState = new PlayerDeathState();
+
+    public PlayerLightAttackState lightAttackState = new PlayerLightAttackState();
+    public PlayerHeavyAttackState heavyAttackState = new PlayerHeavyAttackState();
     /* #endregion */
 
     /* #region Camera States */
@@ -67,7 +74,7 @@ public class PlayerStateManager : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         currentState = idleState;
-        currentState.EnterState(this);
+        currentState.EnterState(this, null);
 
         currentCameraState = freeRoamCameraState;
         currentCameraState.EnterState(this);
@@ -91,6 +98,11 @@ public class PlayerStateManager : MonoBehaviour
         input.Player.RotateCamera.canceled += OnRotateCamera;
         input.Player.LockOn.performed += OnLockOn;
         input.Player.ChangeLockOn.performed += OnLockOnChange;
+
+        input.Player.UseItem.performed += OnUseItem;
+
+        input.Player.LightAttack.performed += OnLightAttack;
+        input.Player.HeavyAttack.started += OnHeavyAttack;
     }
 
     private void Update()
@@ -105,10 +117,11 @@ public class PlayerStateManager : MonoBehaviour
         characterController.Move(movementDirection * Time.deltaTime);
     }
 
-    public void SwitchState(PlayerBaseState state)
+    public void SwitchState(PlayerBaseState nextState)
     {
-        currentState = state;
-        currentState.EnterState(this);
+        PlayerBaseState previousState = currentState;
+        currentState = nextState;
+        currentState.EnterState(this, previousState);
     }
 
     public void SwitchState(PlayerCameraBaseState state) {
@@ -153,6 +166,7 @@ public class PlayerStateManager : MonoBehaviour
 
     public void OnHeavyAttack(InputAction.CallbackContext context)
     {
+        Debug.Log(context.ReadValue<float>());
         currentState.OnHeavyAttack(context, this);
     }
 
