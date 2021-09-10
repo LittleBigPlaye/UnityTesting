@@ -120,8 +120,7 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void OnUseItem(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Replace with check if the player has enough flasks left
-        if (true)
+        if (player.InventoryController.CurrentNumberOfPotions > 0)
         {
             ExitState(player);
             player.SwitchState(player.healingState);

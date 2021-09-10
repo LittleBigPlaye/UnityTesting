@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StaminaController : MonoBehaviour
 {
-
+    public FilledBarController staminaBarController;
     public float regenerationDelay = 4f;
     public float regenerationSpeed = 5f;
 
@@ -34,19 +34,18 @@ public class StaminaController : MonoBehaviour
                 currentStaminaDelay = 0f;
             }
             currentStamina = value;
-            if (filledBarController != null)
+            if (staminaBarController != null)
             {
-                filledBarController.CurrentValue = value;
+                staminaBarController.CurrentValue = value;
             }
         }
     }
     private float currentStaminaDelay = 0f;
-    private FilledBarController filledBarController;
+
 
     private void Awake()
     {
-        filledBarController = FindObjectOfType<FilledBarController>();
-        filledBarController.MaxValue = maxStamina;
+        staminaBarController.MaxValue = maxStamina;
         CurrentStamina = maxStamina;
         CanRegenerateStamina = true;
     }

@@ -15,6 +15,4 @@ public abstract class PlayerBaseState
     public virtual void OnBlock(InputAction.CallbackContext context, PlayerStateManager player) {}
     public virtual void OnParry(InputAction.CallbackContext context, PlayerStateManager player) {}
     public virtual void OnUseItem(InputAction.CallbackContext context, PlayerStateManager player) {}
-
-
 }

@@ -81,12 +81,18 @@ public class PlayerStateManager : MonoBehaviour
 
     private StaminaController staminaController;
     public StaminaController StaminaController { get => staminaController; }
+    private HealthController healthController;
+    public HealthController HealthController { get => healthController; }
+    private InventoryController inventoryController;
+    public InventoryController InventoryController { get => inventoryController; }
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         characterController = GetComponentInParent<CharacterController>();
         staminaController = GetComponent<StaminaController>();
+        healthController = GetComponent<HealthController>();
+        inventoryController = GetComponent<InventoryController>();
         InitializeInputs();
 
         currentState = idleState;
@@ -146,6 +152,15 @@ public class PlayerStateManager : MonoBehaviour
     public void EndState()
     {
         currentState.ExitState(this);
+    }
+
+    public void OnHeal()
+    {
+        if (InventoryController.CurrentNumberOfPotions > 0)
+        {
+            healthController.CurrentHealth += InventoryController.potionHealthRestoreValue;
+            InventoryController.CurrentNumberOfPotions -= 1;
+        }
     }
 
     /* #region inputs */

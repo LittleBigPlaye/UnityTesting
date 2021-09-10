@@ -40,8 +40,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void OnUseItem(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Check if player has enough flasks for healing
-        if (true)
+        if (player.InventoryController.CurrentNumberOfPotions > 0)
         {
             player.SwitchState(player.healingState);
         }

@@ -4,22 +4,23 @@ using UnityEngine;
 
 public class HealthController : MonoBehaviour
 {
-    private int currentHealth = 100;
-    public int CurrentHealth
+    public FilledBarController healthBarController;
+    public float maxHealth;
+    private float currentHealth = 100;
+    public float CurrentHealth
     {
-        get { return currentHealth; }
-        set { currentHealth = value; }
+        get => currentHealth;
+        set
+        {
+            currentHealth = Mathf.Min(value, maxHealth);
+            healthBarController.CurrentValue = currentHealth;
+        }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        currentHealth = 10f;
+        healthBarController.MaxValue = maxHealth;
+        healthBarController.CurrentValue = currentHealth;
     }
 }
