@@ -6,6 +6,7 @@ public class PlayerDeathState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
+        player.StaminaController.CanRegenerateStamina = false;
     }
 
     public override void ExitState(PlayerStateManager player)

@@ -6,7 +6,7 @@ public class PlayerHitState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
-        throw new System.NotImplementedException();
+        player.StaminaController.CanRegenerateStamina = false;
     }
 
     public override void ExitState(PlayerStateManager player)

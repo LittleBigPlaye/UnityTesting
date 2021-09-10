@@ -8,6 +8,8 @@ public class PlayerRollState : PlayerBaseState
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.Animator.SetTrigger("roll");
+        player.StaminaController.CanRegenerateStamina = false;
+        player.StaminaController.CurrentStamina -= player.rollStamina;
     }
 
     public override void ExitState(PlayerStateManager player)

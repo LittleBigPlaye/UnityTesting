@@ -10,6 +10,7 @@ public class PlayerSprintState : PlayerBaseState
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.Animator.SetBool("isSprinting", true);
+        player.StaminaController.CanRegenerateStamina = false;
     }
 
     public override void ExitState(PlayerStateManager player)
@@ -22,9 +23,16 @@ public class PlayerSprintState : PlayerBaseState
         if(!player.CharacterController.isGrounded) {
             player.Animator.SetBool("isSprinting", false);
             player.SwitchState(player.fallingState);
+        } else {
+            MovePlayer(player);
+            RotatePlayer(player);
+            player.StaminaController.CurrentStamina -= player.sprintStamina * Time.deltaTime;
+            if(player.StaminaController.CurrentStamina <= 0) {
+                ExitState(player);
+                player.SwitchState(player.walkingState);
+            }
         }
-        MovePlayer(player);
-        RotatePlayer(player);
+        
     }
 
     private void MovePlayer(PlayerStateManager player) {
@@ -64,8 +72,7 @@ public class PlayerSprintState : PlayerBaseState
 
     public override void OnLightAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Check if player has enough stamina left
-        if (true)
+        if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.lightAttackState);
             ExitState(player);
@@ -74,8 +81,7 @@ public class PlayerSprintState : PlayerBaseState
 
     public override void OnHeavyAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Check if player has enough stamina left
-        if (true)
+        if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.heavyAttackState);
             ExitState(player);

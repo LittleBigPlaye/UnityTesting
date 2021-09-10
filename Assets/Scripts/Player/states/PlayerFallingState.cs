@@ -11,6 +11,7 @@ public class PlayerFallingState : PlayerBaseState
     {
         currentFallingTime = 0f;
         player.Animator.SetBool("isGrounded", false);
+        player.StaminaController.CanRegenerateStamina = true;
     }
 
     public override void ExitState(PlayerStateManager player)
@@ -21,7 +22,8 @@ public class PlayerFallingState : PlayerBaseState
     public override void UpdateState(PlayerStateManager player)
     {
         currentFallingTime += Time.deltaTime;
-        if(currentFallingTime >= player.hardLandingDelay) {
+        if (currentFallingTime >= player.hardLandingDelay)
+        {
             player.Animator.SetBool("isLongFall", true);
         }
         if (player.CharacterController.isGrounded && currentFallingTime >= player.hardLandingDelay)

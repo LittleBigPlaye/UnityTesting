@@ -15,6 +15,9 @@ public class PlayerHeavyAttackState : PlayerBaseState
             player.Animator.SetTrigger("attack");
         }
         player.Animator.SetBool("isHeavyAttack", true);
+
+        player.StaminaController.CanRegenerateStamina = false;
+        player.StaminaController.CurrentStamina -= player.heavyAttackStamina;
     }
 
     public override void ExitState(PlayerStateManager player)

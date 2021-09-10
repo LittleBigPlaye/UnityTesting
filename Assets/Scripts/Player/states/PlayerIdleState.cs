@@ -5,7 +5,7 @@ public class PlayerIdleState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
-
+        player.StaminaController.CanRegenerateStamina = true;
     }
 
 
@@ -19,7 +19,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
-
+        
     }
 
     public override void OnMove(InputAction.CallbackContext context, PlayerStateManager player)
@@ -32,7 +32,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void OnSprint(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        if (context.performed)
+        if (context.performed && player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.dodgeState);
         }
@@ -49,8 +49,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void OnLightAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Check if player has enough stamina left
-        if (true)
+        if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.lightAttackState);
         }
@@ -58,8 +57,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void OnHeavyAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Check if player has enough stamina left
-        if (true)
+        if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.heavyAttackState);
         }

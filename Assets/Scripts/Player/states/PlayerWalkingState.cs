@@ -11,6 +11,7 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
+        player.StaminaController.CanRegenerateStamina = true;
         player.Animator.SetBool("isMoving", true);
         player.Animator.SetFloat("walkSidewardSpeed", 0f);
     }
@@ -102,13 +103,13 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void OnSprint(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        if (context.performed)
+        if (context.performed && player.StaminaController.CurrentStamina > 0)
         {
             isSprintKeyPressed = true;
         }
         else
         {
-            if (isSprintKeyPressed && currentSprintKeyTime < player.sprintDelay)
+            if (isSprintKeyPressed && currentSprintKeyTime < player.sprintDelay && player.StaminaController.CurrentStamina > 0)
             {
                 isSprintKeyPressed = false;
                 currentSprintKeyTime = 0f;
@@ -129,8 +130,7 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void OnLightAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Check if player has enough stamina left
-        if (true)
+        if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.lightAttackState);
             ExitState(player);
@@ -139,8 +139,7 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void OnHeavyAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Check if player has enough stamina left
-        if (true)
+        if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.heavyAttackState);
             ExitState(player);

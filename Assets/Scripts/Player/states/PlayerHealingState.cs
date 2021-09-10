@@ -8,6 +8,7 @@ public class PlayerHealingState : PlayerBaseState
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.Animator.SetTrigger("heal");
+        player.StaminaController.CanRegenerateStamina = true;
     }
 
     public override void ExitState(PlayerStateManager player)

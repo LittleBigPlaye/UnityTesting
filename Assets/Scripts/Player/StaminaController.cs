@@ -4,22 +4,65 @@ using UnityEngine;
 
 public class StaminaController : MonoBehaviour
 {
-    private int currentStamina = 100;
-    public int CurrentStamina
+
+    public float regenerationDelay = 4f;
+    public float regenerationSpeed = 5f;
+
+    public float maxStamina = 100f;
+
+    private bool canRegenerateStamina;
+    public bool CanRegenerateStamina
     {
-        get { return currentStamina; }
-        set { currentStamina = value; }
+        get => canRegenerateStamina; set
+        {
+            if (!value)
+            {
+                currentStaminaDelay = 0f;
+            }
+            canRegenerateStamina = value;
+        }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private float currentStamina;
+    public float CurrentStamina
     {
+        get => currentStamina;
+        set
+        {
+            if (value < currentStamina)
+            {
+                currentStaminaDelay = 0f;
+            }
+            currentStamina = value;
+            if (filledBarController != null)
+            {
+                filledBarController.CurrentValue = value;
+            }
+        }
+    }
+    private float currentStaminaDelay = 0f;
+    private FilledBarController filledBarController;
 
+    private void Awake()
+    {
+        filledBarController = FindObjectOfType<FilledBarController>();
+        filledBarController.MaxValue = maxStamina;
+        CurrentStamina = maxStamina;
+        CanRegenerateStamina = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
+        if (CanRegenerateStamina && CurrentStamina < maxStamina)
+        {
+            if (currentStaminaDelay >= regenerationDelay)
+            {
+                CurrentStamina = Mathf.Min(CurrentStamina + regenerationSpeed * Time.deltaTime, maxStamina);
+            }
+            else
+            {
+                currentStaminaDelay += Time.deltaTime;
+            }
+        }
     }
 }

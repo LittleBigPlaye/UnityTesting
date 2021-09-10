@@ -16,6 +16,8 @@ public class PlayerLightAttackState : PlayerBaseState
             player.Animator.SetTrigger("attack");
         }
         player.Animator.SetBool("isHeavyAttack", false);
+        player.StaminaController.CanRegenerateStamina = false;
+        player.StaminaController.CurrentStamina -= player.lightAttackStamina;
     }
 
     public override void ExitState(PlayerStateManager player)
@@ -42,8 +44,7 @@ public class PlayerLightAttackState : PlayerBaseState
 
     public override void OnLightAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Implement check if enough stamina is left
-        if (!isNextStateHeavyAttack && !isNextStateLightAttack)
+        if (!isNextStateHeavyAttack && !isNextStateLightAttack && player.StaminaController.CurrentStamina > 0)
         {
             isNextStateLightAttack = true;
             player.Animator.SetTrigger("attack");
@@ -53,13 +54,11 @@ public class PlayerLightAttackState : PlayerBaseState
 
     public override void OnHeavyAttack(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        //TODO: Implement check if enough stamina is left
-        if (!isNextStateHeavyAttack && !isNextStateLightAttack)
+        if (!isNextStateHeavyAttack && !isNextStateLightAttack && player.StaminaController.CurrentStamina > 0)
         {
             isNextStateHeavyAttack = true;
             player.Animator.SetTrigger("attack");
             player.Animator.SetBool("isHeavyAttack", true);
         }
     }
-
 }

@@ -8,24 +8,24 @@ public class FilledBarController : MonoBehaviour
     public Image background;
     public Image foreground;
     public Image delayedForeground;
-    private float _maxValue = 100f;
-    public float maxValue
+    private float maxValue = 100f;
+    public float MaxValue
     {
         get; set;
     }
 
 
-    private float _currentValue = 50f;
-    public float currentValue
+    private float currentValue = 50f;
+    public float CurrentValue
     {
-        get => _currentValue;
+        get => currentValue;
         set
         {
             if (currentValue > value)
             {
                 currentDelay = delay;
             }
-            _currentValue = Mathf.Min(Mathf.Max(value, 0), maxValue);
+            currentValue = Mathf.Clamp(value, 0, maxValue);
         }
     }
 
@@ -52,8 +52,8 @@ public class FilledBarController : MonoBehaviour
 
     public void InitializeBar(float maxValue)
     {
-        _maxValue = maxValue;
-        _currentValue = maxValue;
+        this.maxValue = maxValue;
+        this.currentValue = maxValue;
         foreground.fillAmount = 1;
         delayedForeground.fillAmount = 1;
     }
@@ -78,7 +78,7 @@ public class FilledBarController : MonoBehaviour
         {
             delayedForeground.fillAmount = Mathf.SmoothDamp(delayedForeground.fillAmount, currentPercentage, ref backgroundVelocity, delayedSpeed);
         }
-        else if (delayedForeground.fillAmount < _currentValue)
+        else if (delayedForeground.fillAmount < currentValue)
         {
             delayedForeground.fillAmount = foreground.fillAmount;
         }
@@ -87,6 +87,6 @@ public class FilledBarController : MonoBehaviour
     //converts a given value to a float between 0 and 1 based on the max value
     private float GetCurrentPercentage()
     {
-        return _currentValue / maxValue;
+        return currentValue / maxValue;
     }
 }

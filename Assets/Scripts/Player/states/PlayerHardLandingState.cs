@@ -8,6 +8,7 @@ public class PlayerHardLandingState : PlayerBaseState
         player.Animator.SetBool("isGrounded", true);
         player.Animator.SetBool("isGrounded", true);
         Gamepad.current.SetMotorSpeeds(0.345f, 0.234f);
+        player.StaminaController.CanRegenerateStamina = true;
     }
 
     public override void ExitState(PlayerStateManager player)
@@ -16,12 +17,10 @@ public class PlayerHardLandingState : PlayerBaseState
         player.Animator.SetBool("isLongFall", false);
         if (player.MovementInput == Vector2.zero)
         {
-
             player.SwitchState(player.idleState);
         }
         else if (player.MovementInput != Vector2.zero)
         {
-
             player.SwitchState(player.walkingState);
         }
     }

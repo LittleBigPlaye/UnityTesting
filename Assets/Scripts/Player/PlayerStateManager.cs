@@ -17,6 +17,14 @@ public class PlayerStateManager : MonoBehaviour
     public float dodgeSpeed = 2f;
     public float hardLandingDelay = 1f;
 
+    [Header("Stamina")]
+    public float sprintStamina = 5f;
+    public float dodgeStamina = 20f;
+    public float rollStamina = 25f;
+    public float lightAttackStamina = 30f;
+    public float heavyAttackStamina = 50f;
+    public float blockStamina = 40f;
+
     [Header("Camera")]
     public Transform camFollower;
     public float cameraRotationSpeed = 3f;
@@ -28,6 +36,7 @@ public class PlayerStateManager : MonoBehaviour
     public float lockOnSpeed = 5f;
     public LayerMask layerMask;
     public LockOnCursorController lockOnCursor;
+
 
     private InputAsset input;
 
@@ -68,19 +77,23 @@ public class PlayerStateManager : MonoBehaviour
     public Vector2 MovementInput { get => movementInput; }
 
     private Transform lockOnTarget = null;
-    public Transform LockOnTarget {get; set;}
+    public Transform LockOnTarget { get; set; }
+
+    private StaminaController staminaController;
+    public StaminaController StaminaController { get => staminaController; }
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        characterController = GetComponentInParent<CharacterController>();
+        staminaController = GetComponent<StaminaController>();
+        InitializeInputs();
+
         currentState = idleState;
         currentState.EnterState(this, null);
 
         currentCameraState = freeRoamCameraState;
         currentCameraState.EnterState(this);
-
-        characterController = GetComponentInParent<CharacterController>();
-        InitializeInputs();
     }
 
     private void InitializeInputs()
@@ -124,7 +137,8 @@ public class PlayerStateManager : MonoBehaviour
         currentState.EnterState(this, previousState);
     }
 
-    public void SwitchState(PlayerCameraBaseState state) {
+    public void SwitchState(PlayerCameraBaseState state)
+    {
         currentCameraState = state;
         currentCameraState.EnterState(this);
     }
@@ -185,15 +199,18 @@ public class PlayerStateManager : MonoBehaviour
         currentState.OnUseItem(context, this);
     }
 
-    public void OnRotateCamera(InputAction.CallbackContext context) {
+    public void OnRotateCamera(InputAction.CallbackContext context)
+    {
         currentCameraState.OnRotateCamera(context, this);
     }
 
-    public void OnLockOn(InputAction.CallbackContext context) {
+    public void OnLockOn(InputAction.CallbackContext context)
+    {
         currentCameraState.OnLockOn(context, this);
     }
 
-    public void OnLockOnChange(InputAction.CallbackContext context) {
+    public void OnLockOnChange(InputAction.CallbackContext context)
+    {
         currentCameraState.OnLockOnChange(context, this);
     }
 
