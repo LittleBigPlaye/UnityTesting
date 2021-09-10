@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LockOnTargetController : MonoBehaviour
+public class LockOnTargetController : MonoBehaviour, IHitable
 {
     public Color defaultColor = Color.gray;
     public Color selectedColor = Color.red;
@@ -17,7 +17,12 @@ public class LockOnTargetController : MonoBehaviour
             material.color = (isSelected) ? selectedColor : defaultColor;
         }
     }
-    
+
+    public void OnHit()
+    {
+        Destroy(gameObject);
+    }
+
     // Start is called before the first frame update
     private void Awake() {
         material = GetComponent<MeshRenderer>().material;
