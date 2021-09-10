@@ -14,7 +14,7 @@ public class PlayerSprintState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
-        throw new System.NotImplementedException();
+        player.Animator.SetBool("isSprinting", false);
     }
 
     public override void UpdateState(PlayerStateManager player)
@@ -59,6 +59,26 @@ public class PlayerSprintState : PlayerBaseState
         if(context.canceled) {
             player.Animator.SetBool("isSprinting", false);
             player.SwitchState(player.walkingState);
+        }
+    }
+
+    public override void OnLightAttack(InputAction.CallbackContext context, PlayerStateManager player)
+    {
+        //TODO: Check if player has enough stamina left
+        if (true)
+        {
+            player.SwitchState(player.lightAttackState);
+            ExitState(player);
+        }
+    }
+
+    public override void OnHeavyAttack(InputAction.CallbackContext context, PlayerStateManager player)
+    {
+        //TODO: Check if player has enough stamina left
+        if (true)
+        {
+            player.SwitchState(player.heavyAttackState);
+            ExitState(player);
         }
     }
 }

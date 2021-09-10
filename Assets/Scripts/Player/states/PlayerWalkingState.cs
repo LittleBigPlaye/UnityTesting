@@ -88,6 +88,7 @@ public class PlayerWalkingState : PlayerBaseState
     {
         isSprintKeyPressed = false;
         currentSprintKeyTime = 0f;
+        player.Animator.SetBool("isMoving", false);
     }
 
     public override void OnMove(InputAction.CallbackContext context, PlayerStateManager player)
@@ -122,7 +123,27 @@ public class PlayerWalkingState : PlayerBaseState
         if (true)
         {
             ExitState(player);
+            player.SwitchState(player.healingState);
         }
-        player.SwitchState(player.healingState);
+    }
+
+    public override void OnLightAttack(InputAction.CallbackContext context, PlayerStateManager player)
+    {
+        //TODO: Check if player has enough stamina left
+        if (true)
+        {
+            player.SwitchState(player.lightAttackState);
+            ExitState(player);
+        }
+    }
+
+    public override void OnHeavyAttack(InputAction.CallbackContext context, PlayerStateManager player)
+    {
+        //TODO: Check if player has enough stamina left
+        if (true)
+        {
+            player.SwitchState(player.heavyAttackState);
+            ExitState(player);
+        }
     }
 }
