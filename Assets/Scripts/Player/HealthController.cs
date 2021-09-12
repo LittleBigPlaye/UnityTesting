@@ -19,7 +19,7 @@ public class HealthController : MonoBehaviour
 
     private void Awake()
     {
-        currentHealth = 10f;
+        currentHealth = maxHealth;
         healthBarController.MaxValue = maxHealth;
         healthBarController.CurrentValue = currentHealth;
     }

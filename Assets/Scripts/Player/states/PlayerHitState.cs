@@ -11,8 +11,7 @@ public class PlayerHitState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
-        //TODO: Check if the player has more than zero lifepoints
-        if (true)
+        if (player.HealthController.CurrentHealth > 0)
         {
             player.SwitchState(player.idleState);
         }

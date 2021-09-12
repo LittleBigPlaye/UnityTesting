@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerStateManager : MonoBehaviour
 {
     [Header("Movement")]
-    public Transform playerModel;
     public float walkingSpeed = 5f;
     public float sprintingSpeed = 7f;
     public float playerRotationSpeed = 5f;
@@ -77,7 +76,7 @@ public class PlayerStateManager : MonoBehaviour
     public Vector2 MovementInput { get => movementInput; }
 
     private Transform lockOnTarget = null;
-    public Transform LockOnTarget { get; set; }
+    public Transform LockOnTarget { get => lockOnTarget; set => lockOnTarget = value; }
 
     private StaminaController staminaController;
     public StaminaController StaminaController { get => staminaController; }

@@ -6,6 +6,8 @@ public class PlayerIdleState : PlayerBaseState
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
         player.StaminaController.CanRegenerateStamina = true;
+        player.Animator.SetFloat("IKLeftFootWeight", 1f);
+        player.Animator.SetFloat("IKRightFootWeight", 1f);
     }
 
 
@@ -14,12 +16,14 @@ public class PlayerIdleState : PlayerBaseState
         if (!player.CharacterController.isGrounded)
         {
             player.SwitchState(player.fallingState);
+            ExitState(player);
         }
     }
 
     public override void ExitState(PlayerStateManager player)
     {
-        
+        player.Animator.SetFloat("IKLeftFootWeight", 0f);
+        player.Animator.SetFloat("IKRightFootWeight", 0f);
     }
 
     public override void OnMove(InputAction.CallbackContext context, PlayerStateManager player)
@@ -27,6 +31,7 @@ public class PlayerIdleState : PlayerBaseState
         if (context.performed || context.started)
         {
             player.SwitchState(player.walkingState);
+            ExitState(player);
         }
     }
 
@@ -35,6 +40,7 @@ public class PlayerIdleState : PlayerBaseState
         if (context.performed && player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.dodgeState);
+            ExitState(player);
         }
     }
 
@@ -43,6 +49,7 @@ public class PlayerIdleState : PlayerBaseState
         if (player.InventoryController.CurrentNumberOfPotions > 0)
         {
             player.SwitchState(player.healingState);
+            ExitState(player);
         }
     }
 
@@ -51,6 +58,7 @@ public class PlayerIdleState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.lightAttackState);
+            ExitState(player);
         }
     }
 
@@ -59,6 +67,7 @@ public class PlayerIdleState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.heavyAttackState);
+            ExitState(player);
         }
     }
 }

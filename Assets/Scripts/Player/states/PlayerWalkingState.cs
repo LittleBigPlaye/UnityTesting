@@ -26,7 +26,6 @@ public class PlayerWalkingState : PlayerBaseState
 
         MovePlayer(player);
         RotatePlayer(player);
-        Debug.Log(Vector3.Angle(moveDirection, player.transform.forward));
 
         if (isSprintKeyPressed && currentSprintKeyTime < player.sprintDelay)
         {
