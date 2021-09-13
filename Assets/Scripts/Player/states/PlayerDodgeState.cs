@@ -11,6 +11,11 @@ public class PlayerDodgeState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
+
+    }
+
+    public override void EndStateByAnimation(PlayerStateManager player)
+    {
         player.SwitchState(player.idleState);
     }
 

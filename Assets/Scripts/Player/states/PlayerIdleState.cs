@@ -31,7 +31,6 @@ public class PlayerIdleState : PlayerBaseState
         if (context.performed || context.started)
         {
             player.SwitchState(player.walkingState);
-            ExitState(player);
         }
     }
 
@@ -40,7 +39,6 @@ public class PlayerIdleState : PlayerBaseState
         if (context.performed && player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.dodgeState);
-            ExitState(player);
         }
     }
 
@@ -49,7 +47,6 @@ public class PlayerIdleState : PlayerBaseState
         if (player.InventoryController.CurrentNumberOfPotions > 0)
         {
             player.SwitchState(player.healingState);
-            ExitState(player);
         }
     }
 
@@ -58,7 +55,6 @@ public class PlayerIdleState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.lightAttackState);
-            ExitState(player);
         }
     }
 
@@ -67,7 +63,6 @@ public class PlayerIdleState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.heavyAttackState);
-            ExitState(player);
         }
     }
 }

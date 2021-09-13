@@ -18,8 +18,10 @@ public class Weapon : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) {
         //TODO: Check if obstacle is between targetTo hit and sword
+        Debug.Log(other.name);
         if(other.GetComponent<IHitable>() != null) {
-            other.GetComponent<IHitable>().OnHit();
+            Damage damage = new Damage(100f);
+            other.GetComponent<IHitable>().OnHit(damage);
         }
     }
 }

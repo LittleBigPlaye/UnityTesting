@@ -7,12 +7,18 @@ public class PlayerRollState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
+        player.Animator.SetBool("isMoving", true);
         player.Animator.SetTrigger("roll");
         player.StaminaController.CanRegenerateStamina = false;
         player.StaminaController.CurrentStamina -= player.rollStamina;
     }
 
     public override void ExitState(PlayerStateManager player)
+    {
+        player.Animator.SetBool("isMoving", false);
+    }
+
+    public override void EndStateByAnimation(PlayerStateManager player)
     {
         if (player.MovementInput == Vector2.zero)
         {
@@ -23,6 +29,8 @@ public class PlayerRollState : PlayerBaseState
             player.SwitchState(player.walkingState);
         }
     }
+
+
 
     public override void UpdateState(PlayerStateManager player)
     {

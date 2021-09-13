@@ -13,6 +13,11 @@ public class PlayerHealingState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
+        
+    }
+
+    public override void EndStateByAnimation(PlayerStateManager player)
+    {
         if (player.MovementInput == Vector2.zero)
         {
             player.SwitchState(player.idleState);
@@ -38,4 +43,5 @@ public class PlayerHealingState : PlayerBaseState
             player.Animator.SetBool("isMoving", false);
         }
     }
+
 }

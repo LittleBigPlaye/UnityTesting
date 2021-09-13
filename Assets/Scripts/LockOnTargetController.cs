@@ -18,7 +18,7 @@ public class LockOnTargetController : MonoBehaviour, IHitable
         }
     }
 
-    public void OnHit()
+    public void OnHit(Damage damage)
     {
         Destroy(gameObject);
     }

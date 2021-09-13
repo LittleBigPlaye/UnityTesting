@@ -12,15 +12,15 @@ public class HealthController : MonoBehaviour
         get => currentHealth;
         set
         {
-            currentHealth = Mathf.Min(value, maxHealth);
+            currentHealth = Mathf.Clamp(value, 0, maxHealth);
             healthBarController.CurrentValue = currentHealth;
         }
     }
 
     private void Awake()
     {
-        currentHealth = maxHealth;
         healthBarController.MaxValue = maxHealth;
+        currentHealth = maxHealth;
         healthBarController.CurrentValue = currentHealth;
     }
 }

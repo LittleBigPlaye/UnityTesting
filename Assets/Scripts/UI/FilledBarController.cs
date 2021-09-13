@@ -11,11 +11,11 @@ public class FilledBarController : MonoBehaviour
     private float maxValue = 100f;
     public float MaxValue
     {
-        get; set;
+        get => maxValue; set => maxValue = value;
     }
 
 
-    private float currentValue = 50f;
+    private float currentValue = 100f;
     public float CurrentValue
     {
         get => currentValue;
@@ -44,7 +44,6 @@ public class FilledBarController : MonoBehaviour
         if (delayedForeground != null && currentDelay <= 0)
         {
             UpdateBackgroundBar();
-
         }
         UpdateForegroundBar();
         currentDelay = Mathf.Max(0, currentDelay - Time.deltaTime);

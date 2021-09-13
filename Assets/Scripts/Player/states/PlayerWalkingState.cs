@@ -20,7 +20,6 @@ public class PlayerWalkingState : PlayerBaseState
     {
         if (!player.CharacterController.isGrounded)
         {
-            ExitState(player);
             player.SwitchState(player.fallingState);
         }
 
@@ -78,11 +77,7 @@ public class PlayerWalkingState : PlayerBaseState
                 player.transform.rotation = nextRotation;
             }
         }
-
-
     }
-
-
 
     public override void ExitState(PlayerStateManager player)
     {
@@ -121,7 +116,6 @@ public class PlayerWalkingState : PlayerBaseState
     {
         if (player.InventoryController.CurrentNumberOfPotions > 0)
         {
-            ExitState(player);
             player.SwitchState(player.healingState);
         }
     }
@@ -131,7 +125,6 @@ public class PlayerWalkingState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.lightAttackState);
-            ExitState(player);
         }
     }
 
@@ -140,7 +133,6 @@ public class PlayerWalkingState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.heavyAttackState);
-            ExitState(player);
         }
     }
 }

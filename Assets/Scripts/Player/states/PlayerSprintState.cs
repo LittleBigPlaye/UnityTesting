@@ -9,26 +9,26 @@ public class PlayerSprintState : PlayerBaseState
     
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
+        player.Animator.SetBool("isMoving", true);
         player.Animator.SetBool("isSprinting", true);
         player.StaminaController.CanRegenerateStamina = false;
     }
 
     public override void ExitState(PlayerStateManager player)
     {
+        player.Animator.SetBool("isMoving", false);
         player.Animator.SetBool("isSprinting", false);
     }
 
     public override void UpdateState(PlayerStateManager player)
     {
         if(!player.CharacterController.isGrounded) {
-            player.Animator.SetBool("isSprinting", false);
             player.SwitchState(player.fallingState);
         } else {
             MovePlayer(player);
             RotatePlayer(player);
             player.StaminaController.CurrentStamina -= player.sprintStamina * Time.deltaTime;
             if(player.StaminaController.CurrentStamina <= 0) {
-                ExitState(player);
                 player.SwitchState(player.walkingState);
             }
         }
@@ -57,7 +57,6 @@ public class PlayerSprintState : PlayerBaseState
     public override void OnMove(InputAction.CallbackContext context, PlayerStateManager player)
     {
         if(context.canceled) {
-            player.Animator.SetBool("isSprinting",false);
             player.SwitchState(player.idleState);
         }
     }
@@ -65,7 +64,6 @@ public class PlayerSprintState : PlayerBaseState
     public override void OnSprint(InputAction.CallbackContext context, PlayerStateManager player)
     {
         if(context.canceled) {
-            player.Animator.SetBool("isSprinting", false);
             player.SwitchState(player.walkingState);
         }
     }
@@ -75,7 +73,6 @@ public class PlayerSprintState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.lightAttackState);
-            ExitState(player);
         }
     }
 
@@ -84,7 +81,6 @@ public class PlayerSprintState : PlayerBaseState
         if (player.StaminaController.CurrentStamina > 0)
         {
             player.SwitchState(player.heavyAttackState);
-            ExitState(player);
         }
     }
 }

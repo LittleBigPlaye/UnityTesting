@@ -22,6 +22,13 @@ public class PlayerLightAttackState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
+
+        isNextStateLightAttack = false;
+        isNextStateHeavyAttack = false;
+    }
+
+    public override void EndStateByAnimation(PlayerStateManager player)
+    {
         if (isNextStateLightAttack)
         {
             player.SwitchState(player.lightAttackState);
@@ -34,12 +41,11 @@ public class PlayerLightAttackState : PlayerBaseState
         {
             player.SwitchState(player.idleState);
         }
-        isNextStateLightAttack = false;
-        isNextStateHeavyAttack = false;
     }
 
     public override void UpdateState(PlayerStateManager player)
     {
+
     }
 
     public override void OnLightAttack(InputAction.CallbackContext context, PlayerStateManager player)

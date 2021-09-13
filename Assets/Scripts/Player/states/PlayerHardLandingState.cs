@@ -13,8 +13,12 @@ public class PlayerHardLandingState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
-        Gamepad.current.SetMotorSpeeds(0f, 0f);
         player.Animator.SetBool("isLongFall", false);
+    }
+
+    public override void EndStateByAnimation(PlayerStateManager player)
+    {
+        Gamepad.current.SetMotorSpeeds(0f, 0f);
         if (player.MovementInput == Vector2.zero)
         {
             player.SwitchState(player.idleState);
@@ -42,4 +46,5 @@ public class PlayerHardLandingState : PlayerBaseState
             player.Animator.SetBool("isSprinting", false);
         }
     }
+
 }

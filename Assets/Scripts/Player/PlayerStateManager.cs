@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerStateManager : MonoBehaviour
+public class PlayerStateManager : CharacterStateManager
 {
     [Header("Movement")]
     public float walkingSpeed = 5f;
@@ -44,6 +44,9 @@ public class PlayerStateManager : MonoBehaviour
 
     private CharacterController characterController;
     public CharacterController CharacterController { get => characterController; }
+
+    private bool isInvincible = false;
+    public bool IsInvincible { get => isInvincible; set => isInvincible = value; }
 
 
     /* #region Player States */
@@ -138,6 +141,7 @@ public class PlayerStateManager : MonoBehaviour
     public void SwitchState(PlayerBaseState nextState)
     {
         PlayerBaseState previousState = currentState;
+        currentState.ExitState(this);
         currentState = nextState;
         currentState.EnterState(this, previousState);
     }
@@ -148,9 +152,9 @@ public class PlayerStateManager : MonoBehaviour
         currentCameraState.EnterState(this);
     }
 
-    public void EndState()
+    public override void EndState()
     {
-        currentState.ExitState(this);
+        currentState.EndStateByAnimation(this);
     }
 
     public void OnHeal()
@@ -162,7 +166,16 @@ public class PlayerStateManager : MonoBehaviour
         }
     }
 
-    /* #region inputs */
+    public override void GetHit(float damage)
+    {
+        if (!isInvincible)
+        {
+            healthController.CurrentHealth -= damage;
+            currentState.GetHit(this);
+        }
+    }
+
+    #region inputs
     public void OnMove(InputAction.CallbackContext context)
     {
         if (context.started || context.performed)
@@ -237,5 +250,5 @@ public class PlayerStateManager : MonoBehaviour
     {
         input.Disable();
     }
-    /* #endregion */
+    #endregion
 }

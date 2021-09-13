@@ -16,7 +16,6 @@ public class PlayerFallingState : PlayerBaseState
 
     public override void ExitState(PlayerStateManager player)
     {
-        throw new System.NotImplementedException();
     }
 
     public override void UpdateState(PlayerStateManager player)
@@ -55,4 +54,5 @@ public class PlayerFallingState : PlayerBaseState
             player.Animator.SetBool("isSprinting", false);
         }
     }
+
 }
