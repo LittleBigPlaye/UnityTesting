@@ -38,11 +38,7 @@ public class PlayerCameraLockOnState : PlayerCameraBaseState
                 player.LockOnTarget = null;
             }
         }
-
-
     }
-
-
 
     public override void OnLockOn(InputAction.CallbackContext context, PlayerStateManager player)
     {
