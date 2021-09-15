@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class InventoryController : MonoBehaviour
 {
-    public int maxNumberOfPotions = 5;
-    public float potionHealthRestoreValue = 50f;
+    [SerializeField] int maxNumberOfPotions = 5;
+    [SerializeField] float potionHealthRestoreValue = 50f;
+
+    public float PotionHealthRestoreValue {get => potionHealthRestoreValue;}
 
     private int currentNumberOfPotions;
     public int CurrentNumberOfPotions

@@ -6,8 +6,8 @@ using UnityEngine;
 public class IKFootPlacer : MonoBehaviour
 {
     [Range(0f,1f)]
-    public float distanceToGround = 1f;
-    public LayerMask groundLayerMask;
+    [SerializeField] float distanceToGround = 1f;
+    [SerializeField] LayerMask groundLayerMask;
     
     private Animator animator;
 

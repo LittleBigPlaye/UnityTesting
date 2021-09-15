@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class HealthController : MonoBehaviour
 {
-    public FilledBarController healthBarController;
-    public float maxHealth;
+    [SerializeField] FilledBarController healthBarController;
+    [SerializeField] float maxHealth;
+
     private float currentHealth = 100;
     public float CurrentHealth
     {

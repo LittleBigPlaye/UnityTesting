@@ -9,7 +9,6 @@ public class PlayerStateManager : CharacterStateManager
     public float walkingSpeed = 5f;
     public float sprintingSpeed = 7f;
     public float playerRotationSpeed = 5f;
-    public float gravity = 12f;
 
     public float sprintDelay = 1f;
     public float rollSpeed = 3f;
@@ -51,22 +50,22 @@ public class PlayerStateManager : CharacterStateManager
 
     /* #region Player States */
     private PlayerBaseState currentState;
-    public PlayerIdleState idleState = new PlayerIdleState();
-    public PlayerWalkingState walkingState = new PlayerWalkingState();
+    public readonly PlayerIdleState idleState = new PlayerIdleState();
+    public readonly PlayerWalkingState walkingState = new PlayerWalkingState();
 
-    public PlayerDodgeState dodgeState = new PlayerDodgeState();
-    public PlayerSprintState sprintState = new PlayerSprintState();
-    public PlayerRollState rollState = new PlayerRollState();
+    public readonly PlayerDodgeState dodgeState = new PlayerDodgeState();
+    public readonly PlayerSprintState sprintState = new PlayerSprintState();
+    public readonly PlayerRollState rollState = new PlayerRollState();
 
-    public PlayerFallingState fallingState = new PlayerFallingState();
-    public PlayerHardLandingState hardLandingState = new PlayerHardLandingState();
+    public readonly PlayerFallingState fallingState = new PlayerFallingState();
+    public readonly PlayerHardLandingState hardLandingState = new PlayerHardLandingState();
 
-    public PlayerHealingState healingState = new PlayerHealingState();
-    public PlayerHitState hitState = new PlayerHitState();
-    public PlayerDeathState deathState = new PlayerDeathState();
+    public readonly PlayerHealingState healingState = new PlayerHealingState();
+    public readonly PlayerHitState hitState = new PlayerHitState();
+    public readonly PlayerDeathState deathState = new PlayerDeathState();
 
-    public PlayerLightAttackState lightAttackState = new PlayerLightAttackState();
-    public PlayerHeavyAttackState heavyAttackState = new PlayerHeavyAttackState();
+    public readonly PlayerLightAttackState lightAttackState = new PlayerLightAttackState();
+    public readonly PlayerHeavyAttackState heavyAttackState = new PlayerHeavyAttackState();
     /* #endregion */
 
     /* #region Camera States */
@@ -134,7 +133,14 @@ public class PlayerStateManager : CharacterStateManager
 
     public void Move(Vector3 movementDirection)
     {
-        movementDirection += Physics.gravity;
+        if (characterController.isGrounded)
+        {
+            movementDirection.y -= .5f;
+        }
+        else
+        {
+            movementDirection += Physics.gravity;
+        }
         characterController.Move(movementDirection * Time.deltaTime);
     }
 
@@ -161,7 +167,7 @@ public class PlayerStateManager : CharacterStateManager
     {
         if (InventoryController.CurrentNumberOfPotions > 0)
         {
-            healthController.CurrentHealth += InventoryController.potionHealthRestoreValue;
+            healthController.CurrentHealth += InventoryController.PotionHealthRestoreValue;
             InventoryController.CurrentNumberOfPotions -= 1;
         }
     }
