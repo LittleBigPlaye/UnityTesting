@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    private Collider weaponCollider;
+    private new Collider collider;
     public CombatController CombatController {get; set;}
 
     private void Awake() {
-        weaponCollider = GetComponent<BoxCollider>();
-        weaponCollider.enabled = false;
+        collider = GetComponent<BoxCollider>();
+        collider.enabled = false;
     }
 
     public void SetTriggerState(bool isEnabled) {
-        weaponCollider.enabled = isEnabled;
+        collider.enabled = isEnabled;
     }
 
     private void OnTriggerEnter(Collider other) {
