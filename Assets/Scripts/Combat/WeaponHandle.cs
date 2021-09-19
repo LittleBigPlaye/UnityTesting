@@ -25,7 +25,6 @@ public class WeaponHandle : MonoBehaviour
 
     private void OnTriggerEnter(Collider other) {
         //TODO: Check if obstacle is between targetTo hit and sword
-        Debug.Log(other.name);
         if(other.GetComponent<IHitable>() != null) {
             Damage damage = new Damage(weaponStats.baseDamage);
             other.GetComponent<IHitable>().OnHit(damage);

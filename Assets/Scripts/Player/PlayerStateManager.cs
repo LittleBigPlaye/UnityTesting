@@ -213,7 +213,6 @@ public class PlayerStateManager : CharacterStateManager
 
     public void OnHeavyAttack(InputAction.CallbackContext context)
     {
-        Debug.Log(context.ReadValue<float>());
         currentState.OnHeavyAttack(context, this);
     }
 
