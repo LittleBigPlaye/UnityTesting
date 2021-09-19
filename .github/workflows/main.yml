@@ -138,9 +138,11 @@ jobs:
           name: build-StandaloneWindows64
           path: build/StandaloneWindows64
     
-    pre-release:
-      needs: buildWindows
-      runs-on: "ubuntu-latest"
+  pre-release:
+    needs: buildWindows
+    name: Publish for Windows 🖥️
+    runs-on: "ubuntu-latest"
+    steps: 
       - name: Automatic Releases
       - uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
