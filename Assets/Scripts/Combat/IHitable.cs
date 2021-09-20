@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IHitable
 {
-    void OnHit(Damage damage);
+    void OnHit(Damage damage, Vector3 weaponPosition);
 }

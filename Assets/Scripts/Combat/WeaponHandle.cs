@@ -27,7 +27,7 @@ public class WeaponHandle : MonoBehaviour
         //TODO: Check if obstacle is between targetTo hit and sword
         if(other.GetComponent<IHitable>() != null) {
             Damage damage = new Damage(weaponStats.baseDamage);
-            other.GetComponent<IHitable>().OnHit(damage);
+            other.GetComponent<IHitable>().OnHit(damage, transform.position);
         }
     }
 }

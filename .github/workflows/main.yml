@@ -137,14 +137,8 @@ jobs:
         with:
           name: build-StandaloneWindows64
           path: build/StandaloneWindows64
-    
-  pre-release:
-    needs: buildWindows
-    name: Publish for Windows 🖥️
-    runs-on: "ubuntu-latest"
-    steps: 
-      - name: Automatic Releases
-        uses: marvinpinto/action-automatic-releases@v1.2.1
+
+      - uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
               repo_token: "${{ secrets.GITHUB_TOKEN }}"
               automatic_release_tag: "latest"
@@ -152,8 +146,7 @@ jobs:
               title: "Development Build"
               files: |
                 build/StandaloneWindows64
-
-
+    
   # buildAndroid:
   #   needs: testRunner
   #   name: Build for Android 📱

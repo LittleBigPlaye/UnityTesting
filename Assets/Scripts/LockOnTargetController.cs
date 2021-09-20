@@ -18,7 +18,7 @@ public class LockOnTargetController : MonoBehaviour, IHitable
         }
     }
 
-    public void OnHit(Damage damage)
+    public void OnHit(Damage damage, Vector3 weaponPosition)
     {
         Destroy(gameObject);
     }

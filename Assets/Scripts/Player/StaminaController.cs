@@ -13,7 +13,8 @@ public class StaminaController : MonoBehaviour
     private bool canRegenerateStamina;
     public bool CanRegenerateStamina
     {
-        get => canRegenerateStamina; set
+        get => canRegenerateStamina;
+        set
         {
             if (!value)
             {
@@ -21,6 +22,7 @@ public class StaminaController : MonoBehaviour
             }
             canRegenerateStamina = value;
         }
+
     }
 
     private float currentStamina;

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class CombatController : MonoBehaviour, IHitable
 {
-    public WeaponHandle currentWeapon;
-    public LayerMask hitableMask;
-    public LayerMask obstacleMask;
+    [SerializeField] private WeaponHandle currentWeapon;
+    [SerializeField] private LayerMask hitableMask;
+    [SerializeField] private LayerMask obstacleMask;
+
+    public Vector3 LastDamageOrigin {get; private set;}
 
     private CharacterStateManager characterStateManager;
     private CharacterStatsScriptableObject characterStats;
@@ -28,10 +30,12 @@ public class CombatController : MonoBehaviour, IHitable
         currentWeapon.SetTriggerState(false);
     }
 
-    public void OnHit(Damage damage)
+    public void OnHit(Damage damage, Vector3 weaponPosition)
     {
         if (characterStateManager != null)
         {
+            LastDamageOrigin = transform.position - weaponPosition;
+            Debug.Log(LastDamageOrigin);
             characterStateManager.GetHit(calculateResultingDamage(damage));
         }
     }

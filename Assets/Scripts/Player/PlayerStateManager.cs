@@ -14,6 +14,7 @@ public class PlayerStateManager : CharacterStateManager
     public float rollSpeed = 3f;
     public float dodgeSpeed = 2f;
     public float hardLandingDelay = 1f;
+    [SerializeField] private Vector3 gravity = Physics.gravity;
 
     [Header("Stamina")]
     public float sprintStamina = 5f;
@@ -41,8 +42,7 @@ public class PlayerStateManager : CharacterStateManager
     private Animator animator;
     public Animator Animator { get => animator; }
 
-    private CharacterController characterController;
-    public CharacterController CharacterController { get => characterController; }
+    public CharacterController CharacterController { get; private set;}
 
     private bool isInvincible = false;
     public bool IsInvincible { get => isInvincible; set => isInvincible = value; }
@@ -80,20 +80,20 @@ public class PlayerStateManager : CharacterStateManager
     private Transform lockOnTarget = null;
     public Transform LockOnTarget { get => lockOnTarget; set => lockOnTarget = value; }
 
-    private StaminaController staminaController;
-    public StaminaController StaminaController { get => staminaController; }
-    private HealthController healthController;
-    public HealthController HealthController { get => healthController; }
-    private InventoryController inventoryController;
-    public InventoryController InventoryController { get => inventoryController; }
+    public StaminaController StaminaController { get; private set;}
+    public HealthController HealthController { get; private set;}
+    public InventoryController InventoryController { get; private set; }
+    public CombatController CombatController {get; private set;}
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        characterController = GetComponentInParent<CharacterController>();
-        staminaController = GetComponent<StaminaController>();
-        healthController = GetComponent<HealthController>();
-        inventoryController = GetComponent<InventoryController>();
+        CharacterController = GetComponentInParent<CharacterController>();
+        StaminaController = GetComponent<StaminaController>();
+        HealthController = GetComponent<HealthController>();
+        InventoryController = GetComponent<InventoryController>();
+        CombatController = GetComponent<CombatController>();
+
         InitializeInputs();
 
         currentState = idleState;
@@ -133,15 +133,15 @@ public class PlayerStateManager : CharacterStateManager
 
     public void Move(Vector3 movementDirection)
     {
-        if (characterController.isGrounded)
+        if (CharacterController.isGrounded)
         {
             movementDirection.y -= .5f;
         }
         else
         {
-            movementDirection += Physics.gravity;
+            movementDirection += gravity;
         }
-        characterController.Move(movementDirection * Time.deltaTime);
+        CharacterController.Move(movementDirection * Time.deltaTime);
     }
 
     public void SwitchState(PlayerBaseState nextState)
@@ -167,7 +167,7 @@ public class PlayerStateManager : CharacterStateManager
     {
         if (InventoryController.CurrentNumberOfPotions > 0)
         {
-            healthController.CurrentHealth += InventoryController.PotionHealthRestoreValue;
+            HealthController.CurrentHealth += InventoryController.PotionHealthRestoreValue;
             InventoryController.CurrentNumberOfPotions -= 1;
         }
     }
@@ -176,7 +176,7 @@ public class PlayerStateManager : CharacterStateManager
     {
         if (!isInvincible)
         {
-            healthController.CurrentHealth -= damage;
+            HealthController.CurrentHealth -= damage;
             currentState.GetHit(this);
         }
     }
