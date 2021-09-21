@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Discord;
 using System;
-
+#if UNITY_EDITOR || UNITY_STANDALONE
 public class DiscordController
 {
 
@@ -58,3 +58,4 @@ public class DiscordController
     }
 
 }
+#endif
