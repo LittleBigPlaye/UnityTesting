@@ -5,8 +5,9 @@ using UnityEditor;
 
 public class DiscordManager : MonoBehaviour
 {
-    public Texture discordImage;
+#if UNITY_EDITOR || UNITY_STANDALONE
     DiscordController discordController;
+
 
     // Start is called before the first frame update
     void Start()
@@ -25,4 +26,5 @@ public class DiscordManager : MonoBehaviour
     {
         discordController.Stop();
     }
+#endif
 }
