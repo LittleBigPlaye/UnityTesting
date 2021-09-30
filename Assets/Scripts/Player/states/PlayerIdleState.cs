@@ -36,9 +36,13 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void OnSprint(InputAction.CallbackContext context, PlayerStateManager player)
     {
-        if (context.performed && player.StaminaController.CurrentStamina > 0)
+        if (context.performed && player.StaminaController.CurrentStamina > 0 && player.MovementInput != Vector2.zero)
         {
             player.SwitchState(player.dodgeState);
+        }
+        else if (context.performed && player.StaminaController.CurrentStamina > 0 && player.MovementInput == Vector2.zero)
+        {
+            player.SwitchState(player.rollState);
         }
     }
 

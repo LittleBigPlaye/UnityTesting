@@ -7,10 +7,19 @@ public class PlayerRollState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player, PlayerBaseState previousState)
     {
-        player.Animator.SetBool("isMoving", true);
         player.Animator.SetTrigger("roll");
+        player.Animator.SetBool("isMoving", true);
         player.StaminaController.CanRegenerateStamina = false;
         player.StaminaController.CurrentStamina -= player.rollStamina;
+
+
+        //rotate player immediately towards the roll direction
+        Transform camFollower = player.camFollower;
+        Vector2 movementInput = player.MovementInput;
+
+        Vector3 faceDirection = camFollower.forward * movementInput.y + camFollower.right * movementInput.x;
+        Quaternion targetRotation = Quaternion.LookRotation(faceDirection);
+        player.transform.rotation = targetRotation;
     }
 
     public override void ExitState(PlayerStateManager player)

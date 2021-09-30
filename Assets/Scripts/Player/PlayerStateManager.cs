@@ -135,7 +135,7 @@ public class PlayerStateManager : CharacterStateManager
     {
         if (CharacterController.isGrounded)
         {
-            movementDirection.y -= .5f;
+            movementDirection.y -= 4f;
         }
         else
         {
